@@ -8,12 +8,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -33,6 +30,7 @@ public class PulseActivity extends AppCompatActivity {
 
     Button startMeasureButton, stopMeasureButton;
 
+    boolean pulseMeasurement;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +73,8 @@ public class PulseActivity extends AppCompatActivity {
             oxygenSum = 0;
             counter = 0;
 
+            pulseMeasurement = true;
+
             ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
             executorService.schedule(this::stopMeasurement, 20, TimeUnit.SECONDS);
 
@@ -94,8 +94,8 @@ public class PulseActivity extends AppCompatActivity {
             ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
             executorService.schedule(() -> { BluetoothAPIUtils.bluetoothGatt.writeCharacteristic(writeChar); }, 1, TimeUnit.SECONDS);
 
-
             ConnectionActivity.isMeasuring = false;
+            pulseMeasurement = false;
         }
     }
 
@@ -119,11 +119,13 @@ public class PulseActivity extends AppCompatActivity {
                 Log.i(TAG, "Pulse Finale: " + String.valueOf(pulseSum / counter));
                 Log.i(TAG, "Oxygen Finale: " + String.valueOf(oxygenSum / counter));
 
-                BluetoothGattCharacteristic writeChar = BluetoothAPIUtils.bluetoothGatt.getService(Consts.THE_SERVICE).getCharacteristic(Consts.THE_WRITE_CHAR);
-                writeChar.setValue(Consts.ackLiveDataStream);
-                BluetoothAPIUtils.bluetoothGatt.writeCharacteristic(writeChar);
+                if(pulseMeasurement) {
+                    BluetoothGattCharacteristic writeChar = BluetoothAPIUtils.bluetoothGatt.getService(Consts.THE_SERVICE).getCharacteristic(Consts.THE_WRITE_CHAR);
+                    writeChar.setValue(Consts.ackLiveDataStream);
+                    BluetoothAPIUtils.bluetoothGatt.writeCharacteristic(writeChar);
+                }
             }
-            if(!ConnectionActivity.isMeasuring){
+            if(!ConnectionActivity.isMeasuring && counter != 0){
                 pulseText.setText(String.valueOf(pulseSum / counter) + " BPM");
                 oxygenText.setText(String.valueOf(oxygenSum / counter) + "%");
             }
@@ -132,8 +134,6 @@ public class PulseActivity extends AppCompatActivity {
             Log.i(TAG, "Oxygen: " + String.valueOf(oxygen));
 
 
-//            pulseText.setText(String.valueOf(pulse) + " BPM");
-//            oxygenText.setText(String.valueOf(oxygen) + "%");
         }
     };
 }
