@@ -8,6 +8,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
@@ -30,6 +32,7 @@ public class PulseActivity extends AppCompatActivity {
     int pulseSum, oxygenSum, counter;
 
     Button startMeasureButton, stopMeasureButton;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,11 +88,14 @@ public class PulseActivity extends AppCompatActivity {
 
     private void stopMeasurement() {
         if(BluetoothAPIUtils.bluetoothGatt != null && ConnectionActivity.isMeasuring){
-            ConnectionActivity.isMeasuring = false;
-
             BluetoothGattCharacteristic writeChar = BluetoothAPIUtils.bluetoothGatt.getService(Consts.THE_SERVICE).getCharacteristic(Consts.THE_WRITE_CHAR);
             writeChar.setValue(Consts.closeLiveDataStream);
-            BluetoothAPIUtils.bluetoothGatt.writeCharacteristic(writeChar);
+
+            ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+            executorService.schedule(() -> { BluetoothAPIUtils.bluetoothGatt.writeCharacteristic(writeChar); }, 1, TimeUnit.SECONDS);
+
+
+            ConnectionActivity.isMeasuring = false;
         }
     }
 
@@ -107,11 +113,19 @@ public class PulseActivity extends AppCompatActivity {
                 oxygenSum += oxygen;
                 counter += 1;
 
-                pulseText.setText(String.valueOf(pulseSum / counter) + " BPM");
-                oxygenText.setText(String.valueOf(oxygenSum / counter) + "%");
+                pulseText.setText(String.valueOf(pulse) + " BPM");
+                oxygenText.setText(String.valueOf(oxygen) + "%");
 
                 Log.i(TAG, "Pulse Finale: " + String.valueOf(pulseSum / counter));
                 Log.i(TAG, "Oxygen Finale: " + String.valueOf(oxygenSum / counter));
+
+                BluetoothGattCharacteristic writeChar = BluetoothAPIUtils.bluetoothGatt.getService(Consts.THE_SERVICE).getCharacteristic(Consts.THE_WRITE_CHAR);
+                writeChar.setValue(Consts.ackLiveDataStream);
+                BluetoothAPIUtils.bluetoothGatt.writeCharacteristic(writeChar);
+            }
+            if(!ConnectionActivity.isMeasuring){
+                pulseText.setText(String.valueOf(pulseSum / counter) + " BPM");
+                oxygenText.setText(String.valueOf(oxygenSum / counter) + "%");
             }
 
             Log.i(TAG, "Pulse: " + String.valueOf(pulse));

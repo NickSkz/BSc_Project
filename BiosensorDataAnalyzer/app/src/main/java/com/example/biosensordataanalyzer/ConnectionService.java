@@ -45,6 +45,7 @@ public class ConnectionService extends Service {
     public final static String EXTRA_DATA =
             "EXTRA_DATA";
 
+    public static boolean readyToAck;
 
     //Handler to put messages on UI Thread
     Handler handler = new Handler(Looper.getMainLooper());
@@ -214,6 +215,9 @@ public class ConnectionService extends Service {
                         pIntent.putExtra(Consts.SYSTOLIC, characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8,14));
                         pIntent.putExtra(Consts.DIASTOLIC, characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8,13));
                         sendBroadcast(pIntent);
+                    }
+                    else if(characteristic.getValue().length == 8){
+                        Consts.ackLiveDataStream[7] = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 7).byteValue();
                     }
 
                 }

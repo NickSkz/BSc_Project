@@ -134,7 +134,7 @@ public class ConnectionActivity extends AppCompatActivity {
             handler.post(() ->
             {
                 //Accept only singnals that are stronger than -70 RSSI (we want a bracelet to be near our device)
-                if(result.getRssi() > -100) {
+                if(result.getRssi() > -150) {
                     //Add to the list view stuff that hasnt appeared earlier (add to LV if its possible to add smth to the HashSet)
                     if (BLEDevices.add(result.getDevice())) {
                         if (result.getDevice().getName() != null) {
