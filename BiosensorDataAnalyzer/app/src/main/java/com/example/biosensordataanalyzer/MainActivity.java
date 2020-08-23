@@ -10,23 +10,28 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
 
+    public static CurrentUser currentUser;
+
     private Toolbar toolbar;
 
     private Button connSettingsBtn;
     private Button pulseBtn;
     private Button pressureBtn;
+    private Button editBtn;
+
+    private TextView mainUserText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Initiate graphical components
@@ -35,16 +40,16 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         connSettingsBtn = findViewById(R.id.connection_settings_btn);
-        connSettingsBtn.setOnClickListener((view) -> {
-            startActivity(new Intent(MainActivity.this, ConnectionActivity.class));
-        });
-
+        connSettingsBtn.setOnClickListener(view -> startActivity(new Intent(MainActivity.this, ConnectionActivity.class)));
 
         pulseBtn= (Button) findViewById(R.id.pulse_btn);
         pulseBtn.setOnClickListener(view -> startActivity(new Intent(MainActivity.this, PulseActivity.class)));
 
         pressureBtn = (Button) findViewById(R.id.pressure_btn);
         pressureBtn.setOnClickListener(view -> startActivity(new Intent(MainActivity.this, PressureActivity.class)));
+
+        editBtn = findViewById(R.id.edit_usr_btn);
+        editBtn.setOnClickListener(view -> startActivity(new Intent(MainActivity.this, EditUserActivity.class)));
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Enable and turn the bluetooth on
@@ -68,6 +73,18 @@ public class MainActivity extends AppCompatActivity {
         }else {
             Toast.makeText(this, "The device does not support Bluetooth", Toast.LENGTH_LONG).show();
         }
+
+
+        currentUser = new CurrentUser();
+        try{
+            currentUser.load(getApplicationContext());
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+
+        mainUserText = findViewById(R.id.main_user_txt);
+        mainUserText.setText(currentUser.name);
 
     }
 
