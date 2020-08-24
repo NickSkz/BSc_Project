@@ -1,4 +1,4 @@
-package com.example.biosensordataanalyzer;
+package com.example.biosensordataanalyzer.Main;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -12,6 +12,14 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.example.biosensordataanalyzer.Bluetooth.BluetoothAPIUtils;
+import com.example.biosensordataanalyzer.Connection.ConnectionActivity;
+import com.example.biosensordataanalyzer.User.CurrentUser;
+import com.example.biosensordataanalyzer.User.EditUserActivity;
+import com.example.biosensordataanalyzer.MeasurmentsActivities.PressureActivity;
+import com.example.biosensordataanalyzer.MeasurmentsActivities.PulseActivity;
+import com.example.biosensordataanalyzer.R;
 
 public class MainActivity extends AppCompatActivity {
 

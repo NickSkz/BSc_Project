@@ -1,11 +1,12 @@
-package com.example.biosensordataanalyzer;
+package com.example.biosensordataanalyzer.User;
 
 
 import android.content.Context;
-import android.util.Log;
+
+import com.example.biosensordataanalyzer.Constants.Consts;
+import com.example.biosensordataanalyzer.Main.MainActivity;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;

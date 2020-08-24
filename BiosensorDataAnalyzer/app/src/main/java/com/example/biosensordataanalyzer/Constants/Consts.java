@@ -1,4 +1,4 @@
-package com.example.biosensordataanalyzer;
+package com.example.biosensordataanalyzer.Constants;
 
 import java.util.UUID;
 
@@ -17,5 +17,5 @@ public class Consts {
     static final public byte[] closeLiveDataStream = {(byte)-85, (byte)0, (byte)0, (byte)9, (byte)1, (byte)42, (byte)0, (byte)65, (byte)5, (byte)0, (byte)6, (byte)0, (byte)4, (byte)0, (byte)0, (byte)5, (byte)2};
     static final public byte[] ackLiveDataStream = {(byte)-85, (byte)16, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)-1};
 
-    static final String userFileName = "currentUser.txt";
+    static final public String userFileName = "currentUser.txt";
 }

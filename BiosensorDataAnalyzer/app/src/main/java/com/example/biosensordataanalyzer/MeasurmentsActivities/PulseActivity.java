@@ -1,4 +1,4 @@
-package com.example.biosensordataanalyzer;
+package com.example.biosensordataanalyzer.MeasurmentsActivities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -11,44 +11,49 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.example.biosensordataanalyzer.Bluetooth.BluetoothAPIUtils;
+import com.example.biosensordataanalyzer.Connection.ConnectionActivity;
+import com.example.biosensordataanalyzer.Constants.Consts;
+import com.example.biosensordataanalyzer.R;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class PressureActivity extends AppCompatActivity {
+public class PulseActivity extends AppCompatActivity {
 
-    private static final String TAG = "PressureActivity";
+    private static final String TAG = "PulseActivity";
 
     //TextView to display stuff
-    TextView systolicText, diastolicText;
+    TextView pulseText, oxygenText;
 
     //pulse, oxygen
-    int systolic, diastolic;
+    int pulse, oxygen;
 
-    int systolicSum, diastolicSum, counter;
+    int pulseSum, oxygenSum, counter;
 
     Button startMeasureButton, stopMeasureButton;
 
-    boolean pressureMeasurement;
-
+    boolean pulseMeasurement;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_pressure);
+        setContentView(R.layout.activity_pulse);
 
-        systolicText = (TextView) findViewById(R.id.systolic_view);
-        diastolicText = (TextView) findViewById(R.id.diastolic_view);
+        pulseText = (TextView) findViewById(R.id.bpm_view);
+        oxygenText = (TextView) findViewById(R.id.oxygen_view);
 
         //On start button write characteristic to WRITE CHANNEL to get stuff from tha bracelet
-        startMeasureButton = (Button) findViewById(R.id.start_pressure_btn);
+        startMeasureButton = (Button) findViewById(R.id.start_measurement_btn);
         startMeasureButton.setOnClickListener(view -> {
             startMeasurement();
         });
 
         //On close write characteristic that stops live measure
-        stopMeasureButton = (Button) findViewById(R.id.stop_pressure_btn);
+        stopMeasureButton = (Button) findViewById(R.id.stop_measurement_btn);
         stopMeasureButton.setOnClickListener(view -> {
             stopMeasurement();
         });
@@ -57,12 +62,12 @@ public class PressureActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-        registerReceiver(pressureReceiver, new IntentFilter("GetBloodPressureData"));
+        registerReceiver(pulseReceiver, new IntentFilter("GetPulseData"));
     }
 
     @Override
     protected void onPause() {
-        unregisterReceiver(pressureReceiver);
+        unregisterReceiver(pulseReceiver);
         super.onPause();
     }
 
@@ -70,11 +75,11 @@ public class PressureActivity extends AppCompatActivity {
     private void startMeasurement(){
         if(BluetoothAPIUtils.bluetoothGatt != null && !ConnectionActivity.isMeasuring){
 
-            systolicSum = 0;
-            diastolicSum = 0;
+            pulseSum = 0;
+            oxygenSum = 0;
             counter = 0;
 
-            pressureMeasurement = true;
+            pulseMeasurement = true;
 
             ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
             executorService.schedule(this::stopMeasurement, 20, TimeUnit.SECONDS);
@@ -95,44 +100,49 @@ public class PressureActivity extends AppCompatActivity {
             ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
             executorService.schedule(() -> { BluetoothAPIUtils.bluetoothGatt.writeCharacteristic(writeChar); }, 1, TimeUnit.SECONDS);
 
+            this.runOnUiThread(() -> {
+                Toast.makeText(getApplicationContext(), "Measurement finished!", Toast.LENGTH_LONG).show();
+            });
+
             ConnectionActivity.isMeasuring = false;
-            pressureMeasurement = false;
+            pulseMeasurement = false;
         }
     }
 
 
 
     //Listen to incoming Pulse and Oxygen signals
-    private BroadcastReceiver pressureReceiver = new BroadcastReceiver() {
+    private BroadcastReceiver pulseReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            systolic = intent.getIntExtra(Consts.SYSTOLIC,-1);
-            diastolic = intent.getIntExtra(Consts.DIASTOLIC,-1);
+            pulse = intent.getIntExtra(Consts.PULSE,-1);
+            oxygen = intent.getIntExtra(Consts.OXYGEN,-1);
 
-            if(ConnectionActivity.isMeasuring && systolic != 0 && diastolic != 0){
-                systolicSum += systolic;
-                diastolicSum += diastolic;
+            if(ConnectionActivity.isMeasuring && pulse != 0 && oxygen != 0){
+                pulseSum += pulse;
+                oxygenSum += oxygen;
                 counter += 1;
 
-                systolicText.setText(String.valueOf(systolic) + " mmHg");
-                diastolicText.setText(String.valueOf(diastolic) + " mmHg");
+                pulseText.setText(String.valueOf(pulse) + " BPM");
+                oxygenText.setText(String.valueOf(oxygen) + "%");
 
-                Log.i(TAG, "Systolic Finale: " + String.valueOf(systolicSum / counter));
-                Log.i(TAG, "Diastolic Finale: " + String.valueOf(diastolicSum / counter));
+                Log.i(TAG, "Pulse Finale: " + String.valueOf(pulseSum / counter));
+                Log.i(TAG, "Oxygen Finale: " + String.valueOf(oxygenSum / counter));
 
-                if(pressureMeasurement) {
+                if(pulseMeasurement) {
                     BluetoothGattCharacteristic writeChar = BluetoothAPIUtils.bluetoothGatt.getService(Consts.THE_SERVICE).getCharacteristic(Consts.THE_WRITE_CHAR);
                     writeChar.setValue(Consts.ackLiveDataStream);
                     BluetoothAPIUtils.bluetoothGatt.writeCharacteristic(writeChar);
                 }
             }
             if(!ConnectionActivity.isMeasuring && counter != 0){
-                systolicText.setText(String.valueOf(systolicSum / counter) + " mmHg");
-                diastolicText.setText(String.valueOf(diastolicSum / counter) + " mmHg");
+                pulseText.setText(String.valueOf(pulseSum / counter) + " BPM");
+                oxygenText.setText(String.valueOf(oxygenSum / counter) + "%");
             }
 
-            Log.i(TAG, "Systolic: " + String.valueOf(systolic));
-            Log.i(TAG, "Diastolic: " + String.valueOf(diastolic));
+            Log.i(TAG, "Pulse: " + String.valueOf(pulse));
+            Log.i(TAG, "Oxygen: " + String.valueOf(oxygen));
+
 
         }
     };

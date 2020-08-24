@@ -1,4 +1,4 @@
-package com.example.biosensordataanalyzer;
+package com.example.biosensordataanalyzer.Connection;
 
 import android.app.Service;
 import android.bluetooth.BluetoothGatt;
@@ -15,10 +15,14 @@ import android.os.Looper;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.biosensordataanalyzer.Bluetooth.BluetoothAPIUtils;
+import com.example.biosensordataanalyzer.Constants.Consts;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CountDownLatch;
 
 import static android.bluetooth.BluetoothAdapter.STATE_CONNECTED;
 import static android.bluetooth.BluetoothAdapter.STATE_DISCONNECTED;
@@ -26,7 +30,6 @@ import static android.bluetooth.BluetoothAdapter.STATE_DISCONNECTED;
 public class ConnectionService extends Service {
     public ConnectionService() {
     }
-
 
 
     static final String TAG =  "ConnectionService";
@@ -45,7 +48,6 @@ public class ConnectionService extends Service {
     public final static String EXTRA_DATA =
             "EXTRA_DATA";
 
-    public static boolean readyToAck;
 
     //Handler to put messages on UI Thread
     Handler handler = new Handler(Looper.getMainLooper());
@@ -69,6 +71,8 @@ public class ConnectionService extends Service {
     }
 
 
+    private final CountDownLatch latch = new CountDownLatch(1);
+
     //On startService()
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -80,7 +84,7 @@ public class ConnectionService extends Service {
                 BluetoothAPIUtils.bluetoothGatt = BluetoothAPIUtils.bluetoothDevice.connectGatt(getApplicationContext(), false, gattCallback);
 
                 try {
-                    Thread.sleep(5000);
+                    latch.await();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -101,8 +105,6 @@ public class ConnectionService extends Service {
                     BluetoothAPIUtils.bluetoothGatt.writeDescriptor(descriptor);
                     Log.i(TAG, "Notification set!");
                 }
-
-
             }
 
         };
@@ -158,6 +160,8 @@ public class ConnectionService extends Service {
                         for(BluetoothGattService item : BluetoothAPIUtils.bluetoothGatt.getServices()){
                             Log.i(TAG, item.getUuid().toString());
                         }
+
+                        latch.countDown();
 
                     } else {
                         Log.w(TAG, "onServicesDiscovered received: " + status);

@@ -1,4 +1,4 @@
-package com.example.biosensordataanalyzer;
+package com.example.biosensordataanalyzer.Connection;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -16,6 +16,9 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.example.biosensordataanalyzer.Bluetooth.BluetoothAPIUtils;
+import com.example.biosensordataanalyzer.R;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -25,10 +28,12 @@ public class ConnectionActivity extends AppCompatActivity {
 
     private static final String TAG = "СonnectionActivity";
     public static boolean isMeasuring;
+    public static boolean serviceRunning;
 
     private Button scanBtn;
     private ListView deviceLst;
 
+    private boolean isScanning;
 
     //List of avalible devices' name
     private ArrayList<String> lstDevices;
@@ -70,18 +75,19 @@ public class ConnectionActivity extends AppCompatActivity {
             String name = (String) parent.getItemAtPosition(position);
 
             //If someone chooses bracelet from devices -  HBracelet...
-            if(name.startsWith("HBracelet")) {
+            if(name.startsWith("HBracelet") && !serviceRunning) {
                 String[] deviceName = name.split("RSSI");
                 Log.d(TAG, deviceName[0]);
 
-                serviceThread = new Thread(){
-                  @Override
-                    public void run() {
-                      startService(new Intent(getApplicationContext(), ConnectionService.class));
-                      Log.i(TAG, "Service started");
-                    }
-                 };
+                serviceThread = new Thread(() ->{
+                    serviceRunning = true;
+                    startService(new Intent(getApplicationContext(), ConnectionService.class));
+                    Log.i(TAG, "Service started");
+                 });
                 serviceThread.start();
+            }
+            else if (name.startsWith("HBracelet") && serviceRunning){
+                Toast.makeText(this, "Device already connected!", Toast.LENGTH_LONG).show();
             }
             else{
                 Toast.makeText(this, "Unknown Device", Toast.LENGTH_LONG).show();
@@ -91,8 +97,6 @@ public class ConnectionActivity extends AppCompatActivity {
         });
 
     }
-
-    private boolean mScanning;
 
     //Handler to manage message queue + main looper (Handler() - deprecated)
     private Handler handler = new Handler(Looper.getMainLooper());
@@ -110,15 +114,14 @@ public class ConnectionActivity extends AppCompatActivity {
         if (enable) {
             // Stops scanning after a pre-defined scan period, add this to message queue (its still UI Thread!).
             handler.postDelayed(() -> {
-                mScanning = false;
                 BLEScanner.stopScan(leScanCallback);
                 Toast.makeText(this, "SCAN FINISHED!", Toast.LENGTH_LONG).show();
+                isScanning = false;
             }, SCAN_PERIOD);
 
-            mScanning = true;
             BLEScanner.startScan(leScanCallback);
+            isScanning = true;
         } else {
-            mScanning = false;
             BLEScanner.stopScan(leScanCallback);
         }
     }
@@ -147,7 +150,7 @@ public class ConnectionActivity extends AppCompatActivity {
                         }
                     }
                     Log.i(TAG, "YEAH " + result.getDevice().getName());
-                    Log.i(TAG, "WEITER...");
+                    Log.i(TAG, "GOING ON...");
                 }
             });
 
@@ -168,10 +171,12 @@ public class ConnectionActivity extends AppCompatActivity {
 
     //Before scanning for devices, clear all the previous stuff
     public void findPairedDevices(){
-        BLEDevices.clear();
-        lstDevices.clear();
-        lstAdapter.notifyDataSetChanged();
-        scanLeDevice(true);
+        if(!isScanning) {
+            BLEDevices.clear();
+            lstDevices.clear();
+            lstAdapter.notifyDataSetChanged();
+            scanLeDevice(true);
+        }
     }
 
 }
