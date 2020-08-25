@@ -11,8 +11,12 @@ import android.widget.TextView;
 import com.example.biosensordataanalyzer.Main.MainActivity;
 import com.example.biosensordataanalyzer.R;
 
+// Activity connected with user data edition
 public class EditUserActivity extends AppCompatActivity {
 
+    /*
+     * Declare all graphical stuff
+     */
     private Button saveBtn;
 
     private EditText enterName;
@@ -30,12 +34,18 @@ public class EditUserActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_user);
 
+        /*
+         * Initialize graphical components
+         */
         enterName = findViewById(R.id.editTextName);
         enterAge = findViewById(R.id.editTextAge);
         enterHeight = findViewById(R.id.editTextHeight);
         enterWeight = findViewById(R.id.editTextWeight);
 
 
+        /*
+         * Display actual data of a user
+         */
         currentName = findViewById(R.id.curr_name_txt);
         currentName.setText(MainActivity.currentUser.name);
 
@@ -49,6 +59,9 @@ public class EditUserActivity extends AppCompatActivity {
         currentWeight.setText(String.valueOf(MainActivity.currentUser.weight));
 
 
+        /*
+         * If someone changes info, change them to the current data, save 'em to the file, get back to the main activity
+         */
         saveBtn = findViewById(R.id.save_btn);
         saveBtn.setOnClickListener(view -> {
             MainActivity.currentUser.name = enterName.getText().toString();

@@ -13,25 +13,31 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
+// Class that stores information about current user
 public class CurrentUser implements Serializable {
+    /*
+     * Declare features
+     */
     public String name;
     public int age;
     public int weight;
     public int height;
 
+    // Save data to a file (Serialize object)
     public void save(Context context) throws IOException {
-        FileOutputStream fos = context.openFileOutput(Consts.userFileName, Context.MODE_PRIVATE);
-        ObjectOutputStream os = new ObjectOutputStream(fos);
-        os.writeObject(this);
-        os.close();
-        fos.close();
+        FileOutputStream fileOutputStream = context.openFileOutput(Consts.userFileName, Context.MODE_PRIVATE);
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+        objectOutputStream.writeObject(this);
+        objectOutputStream.close();
+        fileOutputStream.close();
     }
 
+    // Load data from file (Deserialize object)
     public void load(Context context) throws IOException, ClassNotFoundException {
-        FileInputStream fis = context.openFileInput(Consts.userFileName);
-        ObjectInputStream is = new ObjectInputStream(fis);
-        MainActivity.currentUser = (CurrentUser) is.readObject();
-        is.close();
-        fis.close();
+        FileInputStream fileInputStream = context.openFileInput(Consts.userFileName);
+        ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+        MainActivity.currentUser = (CurrentUser) objectInputStream.readObject();
+        objectInputStream.close();
+        fileInputStream.close();
     }
 }

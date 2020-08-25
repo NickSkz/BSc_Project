@@ -27,16 +27,19 @@ public class PressureActivity extends AppCompatActivity {
 
     private static final String TAG = "PressureActivity";
 
-    //TextView to display stuff
+    // Declare TextViews
     TextView systolicText, diastolicText;
 
-    //pulse, oxygen
+    // Current Systolic and Diastolic Values
     int systolic, diastolic;
 
+    // Systolic and Diastolic final measurement (average after 20sec interval) + counter used to calculate average
     int systolicSum, diastolicSum, counter;
 
+    // Declare buttons
     Button startMeasureButton, stopMeasureButton;
 
+    // Flag that tells whether blood pressure measure is performed
     boolean pressureMeasurement;
 
 
@@ -45,16 +48,20 @@ public class PressureActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pressure);
 
+        /*
+         * Initialize graphical components
+         */
         systolicText = (TextView) findViewById(R.id.systolic_view);
         diastolicText = (TextView) findViewById(R.id.diastolic_view);
 
-        //On start button write characteristic to WRITE CHANNEL to get stuff from tha bracelet
+        /*
+         * Assign methods to start/stop button
+         */
         startMeasureButton = (Button) findViewById(R.id.start_pressure_btn);
         startMeasureButton.setOnClickListener(view -> {
             startMeasurement();
         });
 
-        //On close write characteristic that stops live measure
         stopMeasureButton = (Button) findViewById(R.id.stop_pressure_btn);
         stopMeasureButton.setOnClickListener(view -> {
             stopMeasurement();
@@ -74,6 +81,14 @@ public class PressureActivity extends AppCompatActivity {
     }
 
 
+    /*
+     * Start measure method
+     * If the measure is off - begin
+     * Zero all variables, set flag pressureMeasurement to true
+     * Stop the measure with 20sec delay (ExecutorService)
+     * Set flag that indicates measure
+     * Write proper characteristic to WRITE CHANNEL, to get stuff from the bracelet
+     */
     private void startMeasurement(){
         if(BluetoothAPIUtils.bluetoothGatt != null && !ConnectionActivity.isMeasuring){
 
@@ -93,7 +108,11 @@ public class PressureActivity extends AppCompatActivity {
         }
     }
 
-
+    /*
+     * Stop measurement method
+     * If measure is on, prepare characteristic and write it with 1 sec delay, so every flag in the system has time to properly set
+     * Make a toast, set flags to false
+     */
     private void stopMeasurement() {
         if(BluetoothAPIUtils.bluetoothGatt != null && ConnectionActivity.isMeasuring){
             BluetoothGattCharacteristic writeChar = BluetoothAPIUtils.bluetoothGatt.getService(Consts.THE_SERVICE).getCharacteristic(Consts.THE_WRITE_CHAR);
@@ -105,7 +124,7 @@ public class PressureActivity extends AppCompatActivity {
                 }, 1, TimeUnit.SECONDS);
 
             this.runOnUiThread(() -> {
-                Toast.makeText(getApplicationContext(), "Measurement finished!", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "Measure finished!", Toast.LENGTH_LONG).show();
             });
 
             ConnectionActivity.isMeasuring = false;
@@ -115,13 +134,17 @@ public class PressureActivity extends AppCompatActivity {
 
 
 
-    //Listen to incoming Pulse and Oxygen signals
+    // Listen to incoming Systolic and Diastolic signals
     private BroadcastReceiver pressureReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            /*
+             * Get values as IntExtra
+             */
             systolic = intent.getIntExtra(Consts.SYSTOLIC,-1);
             diastolic = intent.getIntExtra(Consts.DIASTOLIC,-1);
 
+            // If we get measurements != 0 and measurement is on, calculate current average and print current text
             if(ConnectionActivity.isMeasuring && systolic != 0 && diastolic != 0){
                 systolicSum += systolic;
                 diastolicSum += diastolic;
@@ -133,12 +156,14 @@ public class PressureActivity extends AppCompatActivity {
                 Log.i(TAG, "Systolic Finale: " + String.valueOf(systolicSum / counter));
                 Log.i(TAG, "Diastolic Finale: " + String.valueOf(diastolicSum / counter));
 
+                // If the measurement is still going, send ack signal for next data (write characteristic)
                 if(pressureMeasurement) {
                     BluetoothGattCharacteristic writeChar = BluetoothAPIUtils.bluetoothGatt.getService(Consts.THE_SERVICE).getCharacteristic(Consts.THE_WRITE_CHAR);
                     writeChar.setValue(Consts.ackLiveDataStream);
                     BluetoothAPIUtils.bluetoothGatt.writeCharacteristic(writeChar);
                 }
             }
+            // If the measure is over print average measurement on the screen
             if(!ConnectionActivity.isMeasuring && counter != 0){
                 systolicText.setText(String.valueOf(systolicSum / counter) + " mmHg");
                 diastolicText.setText(String.valueOf(diastolicSum / counter) + " mmHg");

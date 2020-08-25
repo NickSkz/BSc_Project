@@ -21,12 +21,19 @@ import com.example.biosensordataanalyzer.MeasurmentsActivities.PressureActivity;
 import com.example.biosensordataanalyzer.MeasurmentsActivities.PulseActivity;
 import com.example.biosensordataanalyzer.R;
 
+
+// Main activity launched after start of the application
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
 
+    // Declaration of current logged user
     public static CurrentUser currentUser;
 
+
+    /*
+     * Declare graphical components
+     */
     private Toolbar toolbar;
 
     private Button connSettingsBtn;
@@ -36,14 +43,15 @@ public class MainActivity extends AppCompatActivity {
 
     private TextView mainUserText;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // Initiate graphical components
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /*
+         * Initialize graphical components
+         */
         toolbar = findViewById(R.id.mainToolbar);
         setSupportActionBar(toolbar);
 
@@ -59,18 +67,24 @@ public class MainActivity extends AppCompatActivity {
         editBtn = findViewById(R.id.edit_usr_btn);
         editBtn.setOnClickListener(view -> startActivity(new Intent(MainActivity.this, EditUserActivity.class)));
 
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // Enable and turn the bluetooth on
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        /*
+         * Enable and turn the bluetooth on
+         */
         int PERMISSION_REQUEST_COARSE_LOCATION = 1;
         requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, PERMISSION_REQUEST_COARSE_LOCATION);
 
+        // BluetoothAdapter, that represents device's Bluetooth radio (one for entire system)
         final BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
         BluetoothAPIUtils.bluetoothAdapter = bluetoothManager.getAdapter();
 
-        //BluetoothAdapter, that represents device's Bluetooth radio (one for entire system)
+        // Define variable needed for Bluetooth launch
         int REQUEST_ENABLE_BT = 1;
 
+
+        /*
+         * If device supports Bluetooth and is not enabled - enable it
+         */
         if(BluetoothAPIUtils.bluetoothAdapter != null) {
             //If not enabled, enable it
             if (!BluetoothAPIUtils.bluetoothAdapter.isEnabled()) {
@@ -83,6 +97,9 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
+        /*
+         * Initialize and read from the file data about last logged user
+         */
         currentUser = new CurrentUser();
         try{
             currentUser.load(getApplicationContext());
@@ -91,6 +108,7 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
+        // Parse user name on screen
         mainUserText = findViewById(R.id.main_user_txt);
         mainUserText.setText(currentUser.name);
 
@@ -98,6 +116,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+    // Perform appropriate toast according to Bluetooth action
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);

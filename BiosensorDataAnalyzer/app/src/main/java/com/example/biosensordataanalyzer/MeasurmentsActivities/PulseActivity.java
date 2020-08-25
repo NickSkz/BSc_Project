@@ -22,37 +22,46 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+
+// Activity that menages pulse measure
 public class PulseActivity extends AppCompatActivity {
 
     private static final String TAG = "PulseActivity";
 
-    //TextView to display stuff
-    TextView pulseText, oxygenText;
+    // Declare TextViews
+    private TextView pulseText, oxygenText;
 
-    //pulse, oxygen
-    int pulse, oxygen;
+    // Current Pulse and Oxygen Values
+    private int pulse, oxygen;
 
-    int pulseSum, oxygenSum, counter;
+    // Pulse and Oxygen final measurement (average after 20sec interval) + counter used to calculate average
+    private int pulseSum, oxygenSum, counter;
 
-    Button startMeasureButton, stopMeasureButton;
+    // Declare buttons
+    private Button startMeasureButton, stopMeasureButton;
 
-    boolean pulseMeasurement;
+    // Flag that tells whether pulse measure is performed
+    private boolean pulseMeasurement;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pulse);
 
+        /*
+         * Initialize graphical components
+         */
         pulseText = (TextView) findViewById(R.id.bpm_view);
         oxygenText = (TextView) findViewById(R.id.oxygen_view);
 
-        //On start button write characteristic to WRITE CHANNEL to get stuff from tha bracelet
+        /*
+         * Assign methods to start/stop button
+         */
         startMeasureButton = (Button) findViewById(R.id.start_measurement_btn);
         startMeasureButton.setOnClickListener(view -> {
             startMeasurement();
         });
 
-        //On close write characteristic that stops live measure
         stopMeasureButton = (Button) findViewById(R.id.stop_measurement_btn);
         stopMeasureButton.setOnClickListener(view -> {
             stopMeasurement();
@@ -72,6 +81,14 @@ public class PulseActivity extends AppCompatActivity {
     }
 
 
+    /*
+     * Start measure method
+     * If the measure is off - begin
+     * Zero all variables, set flag pulseMeasurement to true
+     * Stop the measure with 20sec delay (ExecutorService)
+     * Set flag that indicates measure
+     * Write proper characteristic to WRITE CHANNEL, to get stuff from the bracelet
+     */
     private void startMeasurement(){
         if(BluetoothAPIUtils.bluetoothGatt != null && !ConnectionActivity.isMeasuring){
 
@@ -92,6 +109,11 @@ public class PulseActivity extends AppCompatActivity {
     }
 
 
+    /*
+     * Stop measurement method
+     * If measure is on, prepare characteristic and write it with 1 sec delay, so every flag in the system has time to properly set
+     * Make a toast, set flags to false
+     */
     private void stopMeasurement() {
         if(BluetoothAPIUtils.bluetoothGatt != null && ConnectionActivity.isMeasuring){
             BluetoothGattCharacteristic writeChar = BluetoothAPIUtils.bluetoothGatt.getService(Consts.THE_SERVICE).getCharacteristic(Consts.THE_WRITE_CHAR);
@@ -101,7 +123,7 @@ public class PulseActivity extends AppCompatActivity {
             executorService.schedule(() -> { BluetoothAPIUtils.bluetoothGatt.writeCharacteristic(writeChar); }, 1, TimeUnit.SECONDS);
 
             this.runOnUiThread(() -> {
-                Toast.makeText(getApplicationContext(), "Measurement finished!", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "Measure finished!", Toast.LENGTH_LONG).show();
             });
 
             ConnectionActivity.isMeasuring = false;
@@ -111,13 +133,17 @@ public class PulseActivity extends AppCompatActivity {
 
 
 
-    //Listen to incoming Pulse and Oxygen signals
+    // Listen to incoming Pulse and Oxygen signals
     private BroadcastReceiver pulseReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            /*
+             * Get values as IntExtra
+             */
             pulse = intent.getIntExtra(Consts.PULSE,-1);
             oxygen = intent.getIntExtra(Consts.OXYGEN,-1);
 
+            // If we get measurements != 0 and measurement is on, calculate current average and print current text
             if(ConnectionActivity.isMeasuring && pulse != 0 && oxygen != 0){
                 pulseSum += pulse;
                 oxygenSum += oxygen;
@@ -129,12 +155,14 @@ public class PulseActivity extends AppCompatActivity {
                 Log.i(TAG, "Pulse Finale: " + String.valueOf(pulseSum / counter));
                 Log.i(TAG, "Oxygen Finale: " + String.valueOf(oxygenSum / counter));
 
+                // If the measurement is still going, send ack signal for next data (write characteristic)
                 if(pulseMeasurement) {
                     BluetoothGattCharacteristic writeChar = BluetoothAPIUtils.bluetoothGatt.getService(Consts.THE_SERVICE).getCharacteristic(Consts.THE_WRITE_CHAR);
                     writeChar.setValue(Consts.ackLiveDataStream);
                     BluetoothAPIUtils.bluetoothGatt.writeCharacteristic(writeChar);
                 }
             }
+            // If the measure is over print average measurement on the screen
             if(!ConnectionActivity.isMeasuring && counter != 0){
                 pulseText.setText(String.valueOf(pulseSum / counter) + " BPM");
                 oxygenText.setText(String.valueOf(oxygenSum / counter) + "%");
