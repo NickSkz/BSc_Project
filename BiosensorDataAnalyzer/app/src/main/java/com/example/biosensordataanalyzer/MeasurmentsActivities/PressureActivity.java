@@ -7,6 +7,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.AssetFileDescriptor;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
@@ -19,6 +20,14 @@ import com.example.biosensordataanalyzer.Constants.Consts;
 import com.example.biosensordataanalyzer.Main.MainActivity;
 import com.example.biosensordataanalyzer.R;
 
+import org.tensorflow.lite.Interpreter;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
+import java.util.Locale;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -29,6 +38,7 @@ public class PressureActivity extends AppCompatActivity {
 
     // Declare TextViews
     TextView systolicText, diastolicText;
+    TextView percentageHDText;
 
     // Current Systolic and Diastolic Values
     int systolic, diastolic;
@@ -42,6 +52,9 @@ public class PressureActivity extends AppCompatActivity {
     // Flag that tells whether blood pressure measure is performed
     boolean pressureMeasurement;
 
+    // Interpreter/ByteBuffer for running tha network
+    Interpreter interpreter;
+    ByteBuffer tfLiteBuffer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +66,7 @@ public class PressureActivity extends AppCompatActivity {
          */
         systolicText = (TextView) findViewById(R.id.systolic_view);
         diastolicText = (TextView) findViewById(R.id.diastolic_view);
+        percentageHDText = findViewById(R.id.heart_disease_text);
 
         /*
          * Assign methods to start/stop button
@@ -66,6 +80,9 @@ public class PressureActivity extends AppCompatActivity {
         stopMeasureButton.setOnClickListener(view -> {
             stopMeasurement();
         });
+
+        //Initialize TfLite Interpreter
+        initializeTfLite();
     }
 
     @Override
@@ -125,6 +142,9 @@ public class PressureActivity extends AppCompatActivity {
 
             this.runOnUiThread(() -> {
                 Toast.makeText(getApplicationContext(), "Measure finished!", Toast.LENGTH_LONG).show();
+                interpreter.run(MainActivity.currentUser.inputPressureHDArr, MainActivity.currentUser.outputPressureHDArr);
+                percentageHDText.setText(String.format(Locale.ENGLISH, "%.2f", MainActivity.currentUser.outputPressureHDArr[0][0] * 100) + "%");
+                Log.i(TAG, String.valueOf(MainActivity.currentUser.outputPressureHDArr[0][0]));
             });
 
             ConnectionActivity.isMeasuring = false;
@@ -156,6 +176,9 @@ public class PressureActivity extends AppCompatActivity {
                 Log.i(TAG, "Systolic Finale: " + String.valueOf(systolicSum / counter));
                 Log.i(TAG, "Diastolic Finale: " + String.valueOf(diastolicSum / counter));
 
+                MainActivity.currentUser.inputPressureHDArr[0][4] = systolicSum / counter;
+                MainActivity.currentUser.inputPressureHDArr[0][5] = systolicSum / counter;
+
                 // If the measurement is still going, send ack signal for next data (write characteristic)
                 if(pressureMeasurement) {
                     BluetoothGattCharacteristic writeChar = BluetoothAPIUtils.bluetoothGatt.getService(Consts.THE_SERVICE).getCharacteristic(Consts.THE_WRITE_CHAR);
@@ -174,4 +197,22 @@ public class PressureActivity extends AppCompatActivity {
 
         }
     };
+
+
+    private void initializeTfLite(){
+        try{
+            AssetFileDescriptor assetFileDescriptor = getAssets().openFd("heart_disease_model.tflite");
+            long startOff = assetFileDescriptor.getStartOffset();
+            long length = assetFileDescriptor.getDeclaredLength();
+
+            FileInputStream fileInputStream = new FileInputStream(assetFileDescriptor.getFileDescriptor());
+            FileChannel fileChannel = fileInputStream.getChannel();
+            tfLiteBuffer = fileChannel.map(FileChannel.MapMode.READ_ONLY, startOff, length);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        interpreter = new Interpreter(tfLiteBuffer);
+    }
 }

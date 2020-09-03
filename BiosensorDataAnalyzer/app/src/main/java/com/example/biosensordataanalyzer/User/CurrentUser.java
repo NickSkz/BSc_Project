@@ -23,6 +23,9 @@ public class CurrentUser implements Serializable {
     public int weight;
     public int height;
 
+    public float[][] inputPressureHDArr = {{20228, 1, 156, 85.0f, 0, 0, 3, 1, 0, 0, 1}};
+    public float[][] outputPressureHDArr = {{0.0f}};
+
     // Save data to a file (Serialize object)
     public void save(Context context) throws IOException {
         FileOutputStream fileOutputStream = context.openFileOutput(Consts.userFileName, Context.MODE_PRIVATE);

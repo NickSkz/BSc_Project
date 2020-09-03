@@ -127,8 +127,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="28dp"
-        android:text="Smth_0:"
-        app:layout_constraintEnd_toStartOf="@+id/textView1313"
+        android:text="Heart Disease Probability:"
+        app:layout_constraintEnd_toStartOf="@+id/heart_disease_text"
+        app:layout_constraintHorizontal_bias="0.75"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView88" />
 
@@ -139,7 +140,7 @@
         android:layout_marginTop="16dp"
         android:text="Smth_2:"
         app:layout_constraintEnd_toStartOf="@+id/textView1515"
-        app:layout_constraintHorizontal_bias="0.49"
+        app:layout_constraintHorizontal_bias="0.47"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView1111" />
 
@@ -156,13 +157,12 @@
         app:layout_constraintTop_toBottomOf="@+id/textView99" />
 
     <TextView
-        android:id="@+id/textView1313"
+        android:id="@+id/heart_disease_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="28dp"
-        android:text="High"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.456"
+        app:layout_constraintHorizontal_bias="0.679"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView88" />
 
@@ -175,7 +175,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.452"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView1313" />
+        app:layout_constraintTop_toBottomOf="@+id/heart_disease_text" />
 
     <TextView
         android:id="@+id/textView1515"
