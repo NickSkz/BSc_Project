@@ -18,9 +18,9 @@ model.add(Dense(1, kernel_initializer=keras.initializers.TruncatedNormal(), acti
 model.summary()
 
 model.compile(loss='binary_crossentropy', optimizer=keras.optimizers.Adam(lr=0.0001), metrics=['accuracy'])
-history = model.fit(X, Y, epochs=7000, batch_size=64, shuffle=True)
+history = model.fit(X, Y, epochs=5000, batch_size=64, shuffle=True)
 
-model.save('heart_disease_model')
+model.save('heart_disease_model.h5')
 
 plt.plot(history.history['loss'])
 plt.title('Loss function')

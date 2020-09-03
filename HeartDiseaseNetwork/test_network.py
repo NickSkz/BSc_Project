@@ -8,7 +8,7 @@ dataset = loadtxt('cardio_traindata.csv', delimiter=';')
 X = dataset[50000:, 1:12]
 Y = dataset[50000:, 12]
 
-model = keras.models.load_model('heart_disease_model')
+model = keras.models.load_model('heart_disease_model.h5')
 
 _, accuracy = model.evaluate(X, Y)
 print('Accuracy: %.2f' % (accuracy*100))
