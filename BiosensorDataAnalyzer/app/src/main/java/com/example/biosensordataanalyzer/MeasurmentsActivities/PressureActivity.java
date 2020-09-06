@@ -8,9 +8,18 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.AssetFileDescriptor;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
+import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,7 +31,6 @@ import com.example.biosensordataanalyzer.R;
 
 import org.tensorflow.lite.Interpreter;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -38,7 +46,8 @@ public class PressureActivity extends AppCompatActivity {
 
     // Declare TextViews
     TextView systolicText, diastolicText;
-    TextView percentageHDText;
+    TextView readyMeasureText;
+
 
     // Current Systolic and Diastolic Values
     int systolic, diastolic;
@@ -66,7 +75,7 @@ public class PressureActivity extends AppCompatActivity {
          */
         systolicText = (TextView) findViewById(R.id.systolic_view);
         diastolicText = (TextView) findViewById(R.id.diastolic_view);
-        percentageHDText = findViewById(R.id.heart_disease_text);
+        readyMeasureText = findViewById(R.id.ready_view);
 
         /*
          * Assign methods to start/stop button
@@ -114,6 +123,7 @@ public class PressureActivity extends AppCompatActivity {
             counter = 0;
 
             pressureMeasurement = true;
+            readyMeasureText.setText("Measure in progress...");
 
             ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
             executorService.schedule(this::stopMeasurement, 20, TimeUnit.SECONDS);
@@ -143,8 +153,8 @@ public class PressureActivity extends AppCompatActivity {
             this.runOnUiThread(() -> {
                 Toast.makeText(getApplicationContext(), "Measure finished!", Toast.LENGTH_LONG).show();
                 interpreter.run(MainActivity.currentUser.inputPressureHDArr, MainActivity.currentUser.outputPressureHDArr);
-                percentageHDText.setText(String.format(Locale.ENGLISH, "%.2f", MainActivity.currentUser.outputPressureHDArr[0][0] * 100) + "%");
                 Log.i(TAG, String.valueOf(MainActivity.currentUser.outputPressureHDArr[0][0]));
+                showPopUp();
             });
 
             ConnectionActivity.isMeasuring = false;
@@ -190,6 +200,7 @@ public class PressureActivity extends AppCompatActivity {
             if(!ConnectionActivity.isMeasuring && counter != 0){
                 systolicText.setText(String.valueOf(systolicSum / counter) + " mmHg");
                 diastolicText.setText(String.valueOf(diastolicSum / counter) + " mmHg");
+                readyMeasureText.setText("Ready for measure!");
             }
 
             Log.i(TAG, "Systolic: " + String.valueOf(systolic));
@@ -214,5 +225,39 @@ public class PressureActivity extends AppCompatActivity {
         }
 
         interpreter = new Interpreter(tfLiteBuffer);
+    }
+
+    private TextView popUpSys, popUpDia, popUpHDText;
+
+    private void showPopUp(){
+        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+
+        try {
+            View popView = inflater.inflate(R.layout.pressure_popup, null);
+            PopupWindow popWindow = new PopupWindow(popView, LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, true);
+
+            popWindow.setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+            popWindow.setElevation(20);
+            popWindow.showAtLocation(readyMeasureText, Gravity.CENTER, 0, 0);
+
+
+            popUpSys = popView.findViewById(R.id.pop_sys_view);
+            popUpSys.setText(String.valueOf(systolicSum / counter) + " mmHg");
+
+            popUpDia = popView.findViewById(R.id.pop_dia_view);
+            popUpDia.setText(String.valueOf(diastolicSum / counter) + " mmHg");
+
+            popUpHDText = popView.findViewById(R.id.pop_hd_text);
+            popUpHDText.setText(String.format(Locale.ENGLISH, "There is %.2f", MainActivity.currentUser.outputPressureHDArr[0][0] * 100) + "% chance of you having a heart disease");
+
+
+            popView.setOnTouchListener((v, event) -> {
+                popWindow.dismiss();
+                return true;
+            });
+
+        }catch (NullPointerException e){
+            e.printStackTrace();
+        }
     }
 }
