@@ -22,7 +22,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".User.EditUserActivity"></activity>
+        <activity android:name=".User.EditUserInfoActivity"></activity>
         <activity android:name=".MeasurmentsActivities.PressureActivity" />
         <activity android:name=".MeasurmentsActivities.PulseActivity" />
 

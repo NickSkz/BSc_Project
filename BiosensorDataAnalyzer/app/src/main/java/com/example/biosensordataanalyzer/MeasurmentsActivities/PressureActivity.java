@@ -90,7 +90,10 @@ public class PressureActivity extends AppCompatActivity {
             stopMeasurement();
         });
 
-        //Initialize TfLite Interpreter
+        // Prepare array according to user's profile data
+        MainActivity.currentUser.prepareNeuralPressureArray();
+
+        // Initialize TfLite Interpreter
         initializeTfLite();
     }
 

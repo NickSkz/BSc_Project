@@ -19,9 +19,17 @@ public class CurrentUser implements Serializable {
      * Declare features
      */
     public String name;
+    public int sex;
     public int age;
     public int weight;
     public int height;
+
+    public int cigaretten;
+    public int alcohol;
+    public int sport;
+
+    public int cholesterol;
+    public int glucose;
 
     public float[][] inputPressureHDArr = {{20228, 1, 156, 85.0f, 0, 0, 3, 1, 0, 0, 1}};
     public float[][] outputPressureHDArr = {{0.0f}};
@@ -42,5 +50,19 @@ public class CurrentUser implements Serializable {
         MainActivity.currentUser = (CurrentUser) objectInputStream.readObject();
         objectInputStream.close();
         fileInputStream.close();
+    }
+
+    public void prepareNeuralPressureArray(){
+        inputPressureHDArr[0][0] = age * 365;
+        inputPressureHDArr[0][1] = sex;
+        inputPressureHDArr[0][2] = height;
+        inputPressureHDArr[0][3] = weight;
+        inputPressureHDArr[0][4] = 0;
+        inputPressureHDArr[0][5] = 0;
+        inputPressureHDArr[0][6] = cholesterol;
+        inputPressureHDArr[0][7] = glucose;
+        inputPressureHDArr[0][8] = cigaretten;
+        inputPressureHDArr[0][9] = alcohol;
+        inputPressureHDArr[0][10] = sport;
     }
 }

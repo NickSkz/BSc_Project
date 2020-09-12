@@ -4,8 +4,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.Manifest;
+import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,10 +18,10 @@ import android.widget.Toast;
 import com.example.biosensordataanalyzer.Bluetooth.BluetoothAPIUtils;
 import com.example.biosensordataanalyzer.Connection.ConnectionActivity;
 import com.example.biosensordataanalyzer.User.CurrentUser;
-import com.example.biosensordataanalyzer.User.EditUserActivity;
 import com.example.biosensordataanalyzer.MeasurmentsActivities.PressureActivity;
 import com.example.biosensordataanalyzer.MeasurmentsActivities.PulseActivity;
 import com.example.biosensordataanalyzer.R;
+import com.example.biosensordataanalyzer.User.EditUserInfoActivity;
 
 
 // Main activity launched after start of the application
@@ -41,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
     private Button pressureBtn;
     private Button editBtn;
 
+    private int EDIT_USER_ACTIVITY = 1;
     private TextView mainUserText;
 
 
@@ -65,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
         pressureBtn.setOnClickListener(view -> startActivity(new Intent(MainActivity.this, PressureActivity.class)));
 
         editBtn = findViewById(R.id.edit_usr_btn);
-        editBtn.setOnClickListener(view -> startActivity(new Intent(MainActivity.this, EditUserActivity.class)));
+        editBtn.setOnClickListener(view -> startActivityForResult(new Intent(MainActivity.this, EditUserInfoActivity.class), EDIT_USER_ACTIVITY));
 
 
         /*
@@ -79,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
         BluetoothAPIUtils.bluetoothAdapter = bluetoothManager.getAdapter();
 
         // Define variable needed for Bluetooth launch
-        int REQUEST_ENABLE_BT = 1;
+        int REQUEST_ENABLE_BT = 2;
 
 
         /*
@@ -134,5 +137,8 @@ public class MainActivity extends AppCompatActivity {
             default:
                 break;
         }
+
+        mainUserText.setText(currentUser.name);
+
     }
 }
