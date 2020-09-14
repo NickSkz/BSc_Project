@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="#E3CCCC">
-
 
     <TextView
         android:id="@+id/textView222"
@@ -25,7 +23,7 @@
         android:layout_width="243dp"
         android:layout_height="42dp"
         android:layout_marginTop="20dp"
-        android:text="Your blood pressure is elevated"
+        android:text="Your pulse is above average"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -61,7 +59,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
-        android:text="Systolic:"
+        android:text="Pulse:"
         android:textSize="24sp"
         app:layout_constraintEnd_toStartOf="@+id/pop_pul_view"
         app:layout_constraintHorizontal_bias="0.27"
@@ -73,7 +71,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="48dp"
-        android:text="Diastolic:"
+        android:text="Oxygen:"
         android:textSize="24sp"
         app:layout_constraintEnd_toStartOf="@+id/pop_oxy_view"
         app:layout_constraintHorizontal_bias="0.298"
@@ -115,5 +113,6 @@
         app:layout_constraintHorizontal_bias="0.507"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/pop_ps_text" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

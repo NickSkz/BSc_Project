@@ -7,17 +7,31 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.biosensordataanalyzer.Bluetooth.BluetoothAPIUtils;
 import com.example.biosensordataanalyzer.Connection.ConnectionActivity;
 import com.example.biosensordataanalyzer.Constants.Consts;
+import com.example.biosensordataanalyzer.Main.MainActivity;
 import com.example.biosensordataanalyzer.R;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -30,6 +44,7 @@ public class PulseActivity extends AppCompatActivity {
 
     // Declare TextViews
     private TextView pulseText, oxygenText;
+    TextView readyMeasureText;
 
     // Current Pulse and Oxygen Values
     private int pulse, oxygen;
@@ -43,6 +58,8 @@ public class PulseActivity extends AppCompatActivity {
     // Flag that tells whether pulse measure is performed
     private boolean pulseMeasurement;
 
+    private HashMap<String, ArrayList<String>> normsTableMale, normsTableFemale;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,6 +70,25 @@ public class PulseActivity extends AppCompatActivity {
          */
         pulseText = (TextView) findViewById(R.id.bpm_view);
         oxygenText = (TextView) findViewById(R.id.oxygen_view);
+        readyMeasureText = findViewById(R.id.ready_pulse_view);
+
+
+        normsTableMale = new HashMap<>();
+        normsTableMale.put("18;25", new ArrayList<>(Arrays.asList("49;55", "56;61", "62;65", "66;69", "70;73", "74;81", "82;999")));
+        normsTableMale.put("26;35", new ArrayList<>(Arrays.asList("49;54", "56;61", "62;65", "66;70", "71;74", "75;81", "82;999")));
+        normsTableMale.put("36;45", new ArrayList<>(Arrays.asList("50;56", "57;62", "63;66", "67;70", "71;75", "76;82", "83;999")));
+        normsTableMale.put("46;55", new ArrayList<>(Arrays.asList("50;57", "58;63", "64;67", "68;71", "72;76", "77;83", "84;999")));
+        normsTableMale.put("56;65", new ArrayList<>(Arrays.asList("51;56", "57;61", "62;67", "68;71", "72;75", "76;81", "82;999")));
+        normsTableMale.put("66;999", new ArrayList<>(Arrays.asList("50;55", "56;61", "62;65", "66;69", "70;73", "74;19", "80;999")));
+
+
+        normsTableFemale = new HashMap<>();
+        normsTableFemale.put("18;25", new ArrayList<>(Arrays.asList("54;60", "61;65", "66;69", "70;73", "74;78", "79;84", "85;999")));
+        normsTableFemale.put("26;35", new ArrayList<>(Arrays.asList("54;59", "60;64", "65;68", "69;72", "73;76", "77;82", "83;999")));
+        normsTableFemale.put("36;45", new ArrayList<>(Arrays.asList("54;59", "60;64", "65;69", "70;73", "74;78", "79;84", "85;999")));
+        normsTableFemale.put("46;55", new ArrayList<>(Arrays.asList("54;60", "61;65", "66;69", "70;73", "74;77", "77;83", "84;999")));
+        normsTableFemale.put("56;65", new ArrayList<>(Arrays.asList("54;59", "60;64", "65;68", "69;73", "74;77", "78;83", "84;999")));
+        normsTableFemale.put("66;999", new ArrayList<>(Arrays.asList("50;59", "60;64", "65;68", "69;72", "73;76", "77;84", "84;999")));
 
         /*
          * Assign methods to start/stop button
@@ -66,6 +102,10 @@ public class PulseActivity extends AppCompatActivity {
         stopMeasureButton.setOnClickListener(view -> {
             stopMeasurement();
         });
+
+
+
+
     }
 
     @Override
@@ -97,6 +137,7 @@ public class PulseActivity extends AppCompatActivity {
             counter = 0;
 
             pulseMeasurement = true;
+            readyMeasureText.setText("Measure in progress...");
 
             ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
             executorService.schedule(this::stopMeasurement, 20, TimeUnit.SECONDS);
@@ -124,6 +165,7 @@ public class PulseActivity extends AppCompatActivity {
 
             this.runOnUiThread(() -> {
                 Toast.makeText(getApplicationContext(), "Measure finished!", Toast.LENGTH_LONG).show();
+                showPopUp();
             });
 
             ConnectionActivity.isMeasuring = false;
@@ -166,6 +208,7 @@ public class PulseActivity extends AppCompatActivity {
             if(!ConnectionActivity.isMeasuring && counter != 0){
                 pulseText.setText(String.valueOf(pulseSum / counter) + " BPM");
                 oxygenText.setText(String.valueOf(oxygenSum / counter) + "%");
+                readyMeasureText.setText("Ready for measure!");
             }
 
             Log.i(TAG, "Pulse: " + String.valueOf(pulse));
@@ -174,4 +217,81 @@ public class PulseActivity extends AppCompatActivity {
 
         }
     };
+
+
+    private TextView popUpPul, popUpOxy, popUpPSText, popUpPulseNorm;
+
+    private void showPopUp(){
+        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+
+        try {
+            View popView = inflater.inflate(R.layout.pulse_popup, null);
+            PopupWindow popWindow = new PopupWindow(popView, LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, true);
+
+            popWindow.setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+            popWindow.setElevation(20);
+            popWindow.showAtLocation(readyMeasureText, Gravity.CENTER, 0, 0);
+
+
+            popUpPul = popView.findViewById(R.id.pop_pul_view);
+            popUpPul.setText(String.valueOf(pulseSum / counter) + " BPM");
+
+            popUpOxy = popView.findViewById(R.id.pop_oxy_view);
+            popUpOxy.setText(String.valueOf(oxygenSum / counter) + " %");
+
+            popUpPSText = popView.findViewById(R.id.pop_ps_text);
+            popUpPSText.setText(String.format(Locale.ENGLISH, "There is %.2f", MainActivity.currentUser.outputPressureHDArr[0][0] * 100) + "% chance of you having a heart disease");
+
+            popUpPulseNorm = popView.findViewById(R.id.pulse_norm_check);
+            popUpPulseNorm.setText("Your pulse is: " + checkPulseNorms());
+
+
+            popView.setOnTouchListener((v, event) -> {
+                popWindow.dismiss();
+                return true;
+            });
+
+        }catch (NullPointerException e){
+            e.printStackTrace();
+        }
+    }
+
+
+    private String checkPulseNorms(){
+
+        int pulse = pulseSum / counter;
+        int oxygen = oxygenSum / counter;
+
+        ArrayList<String> communicateTable = new ArrayList<>(Arrays.asList("athlete", "excellent", "good", "above average", "average", "below average", "poor"));
+
+        HashMap<String, ArrayList<String>> normsTable;
+
+        switch (MainActivity.currentUser.sex){
+            case 1:
+                normsTable = normsTableFemale;
+                break;
+            case 2:
+                normsTable = normsTableMale;
+                break;
+            default:
+                return "enter user data first";
+        }
+
+
+        for(Map.Entry<String, ArrayList<String>> it : normsTable.entrySet()){
+            String[] thresholds = it.getKey().split(";");
+            if(Integer.parseInt(thresholds[0]) <= MainActivity.currentUser.age && Integer.parseInt(thresholds[1]) >= MainActivity.currentUser.age){
+                int iter = 0;
+                for(String item : it.getValue()){
+                    String[] miniThresholds = item.split(";");
+                    if(Integer.parseInt(miniThresholds[0]) <= pulse && Integer.parseInt(miniThresholds[1]) >= pulse){
+                        return communicateTable.get(iter);
+                    }
+                    ++iter;
+                }
+            }
+        }
+
+        return "you're too young";
+    }
 }

@@ -10,12 +10,10 @@ import android.content.IntentFilter;
 import android.content.res.AssetFileDescriptor;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -230,7 +228,7 @@ public class PressureActivity extends AppCompatActivity {
         interpreter = new Interpreter(tfLiteBuffer);
     }
 
-    private TextView popUpSys, popUpDia, popUpHDText;
+    private TextView popUpSys, popUpDia, popUpHDText, popUpPressureNorm;
 
     private void showPopUp(){
         LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
@@ -244,14 +242,17 @@ public class PressureActivity extends AppCompatActivity {
             popWindow.showAtLocation(readyMeasureText, Gravity.CENTER, 0, 0);
 
 
-            popUpSys = popView.findViewById(R.id.pop_sys_view);
+            popUpSys = popView.findViewById(R.id.pop_pul_view);
             popUpSys.setText(String.valueOf(systolicSum / counter) + " mmHg");
 
-            popUpDia = popView.findViewById(R.id.pop_dia_view);
+            popUpDia = popView.findViewById(R.id.pop_oxy_view);
             popUpDia.setText(String.valueOf(diastolicSum / counter) + " mmHg");
 
-            popUpHDText = popView.findViewById(R.id.pop_hd_text);
+            popUpHDText = popView.findViewById(R.id.pop_ps_text);
             popUpHDText.setText(String.format(Locale.ENGLISH, "There is %.2f", MainActivity.currentUser.outputPressureHDArr[0][0] * 100) + "% chance of you having a heart disease");
+
+            popUpPressureNorm = popView.findViewById(R.id.pulse_norm_check);
+            popUpPressureNorm.setText("Your blood pressure is: " + checkPressureNorms());
 
 
             popView.setOnTouchListener((v, event) -> {
@@ -263,4 +264,23 @@ public class PressureActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
+
+    private String checkPressureNorms(){
+        int systolic = systolicSum / counter;
+        int diastolic = diastolicSum / counter;
+
+        if(systolic < 120 && diastolic < 80)
+            return "normal";
+        else if(systolic <= 129 && diastolic < 80)
+            return "elevated";
+        else if(systolic <= 139 || diastolic <= 89)
+            return "high - stage 1";
+        else if(systolic <= 180 || diastolic <= 120)
+            return "high - stage 2";
+        else if(systolic > 180 || diastolic > 120)
+            return "high - stage 3";
+        else
+            return "error during measure";
+    }
+
 }
