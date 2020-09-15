@@ -62,11 +62,11 @@
             android:text="Pressure" />
 
         <Button
-            android:id="@+id/calories_btn"
+            android:id="@+id/steps_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Calories" />
+            android:text="Steps" />
 
     </LinearLayout>
 

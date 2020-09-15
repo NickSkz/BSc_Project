@@ -9,6 +9,7 @@ public class Consts {
      */
     static final public String PULSE = "pulse";
     static final public String OXYGEN = "oxygen";
+    static final public String STEPS = "steps";
 
     static final public String SYSTOLIC = "systolic";
     static final public String DIASTOLIC = "diastolic";
@@ -26,6 +27,8 @@ public class Consts {
     static final public byte[] openLiveDataStream = {(byte)-85, (byte)0, (byte)0, (byte)9, (byte)-63, (byte)123, (byte)0, (byte)64, (byte)5, (byte)0, (byte)6, (byte)0, (byte)4, (byte)0, (byte)1, (byte)5, (byte)2};
     static final public byte[] closeLiveDataStream = {(byte)-85, (byte)0, (byte)0, (byte)9, (byte)1, (byte)42, (byte)0, (byte)65, (byte)5, (byte)0, (byte)6, (byte)0, (byte)4, (byte)0, (byte)0, (byte)5, (byte)2};
     static final public byte[] ackLiveDataStream = {(byte)-85, (byte)16, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)-1};
+
+    static final public byte[] getStepsData = {(byte)-85, (byte)0, (byte)0, (byte)5, (byte)10, (byte)156, (byte)0, (byte)24, (byte)5, (byte)0, (byte)33, (byte)0, (byte)0};
 
     // Name of text file where we store all user's data
     static final public String userFileName = "currentUser.txt";

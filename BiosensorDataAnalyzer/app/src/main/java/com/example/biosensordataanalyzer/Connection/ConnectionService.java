@@ -17,7 +17,10 @@ import android.widget.Toast;
 
 import com.example.biosensordataanalyzer.Bluetooth.BluetoothAPIUtils;
 import com.example.biosensordataanalyzer.Constants.Consts;
+import com.example.biosensordataanalyzer.MeasurmentsActivities.PulseActivity;
+import com.example.biosensordataanalyzer.StaticData.StepsActivity;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -212,19 +215,33 @@ public class ConnectionService extends Service {
                     Log.i(TAG, "VALUE: " +  Arrays.toString(characteristic.getValue()));
 
                     // Broadcast pulse and oxygen message to corresponding receivers
-                    if(characteristic.getValue().length == 16){
-                        Intent intent = new Intent("GetPulseData");
-                        intent.putExtra(Consts.PULSE, characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8,11));
-                        intent.putExtra(Consts.OXYGEN, characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8,12));
-                        sendBroadcast(intent);
+                    if(ConnectionActivity.isMeasuring) {
+                        if (characteristic.getValue().length == 16) {
+                            Intent intent = new Intent("GetPulseData");
+                            intent.putExtra(Consts.PULSE, characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 11));
+                            intent.putExtra(Consts.OXYGEN, characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 12));
+                            sendBroadcast(intent);
 
-                        Intent pIntent = new Intent("GetBloodPressureData");
-                        pIntent.putExtra(Consts.SYSTOLIC, characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8,14));
-                        pIntent.putExtra(Consts.DIASTOLIC, characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8,13));
-                        sendBroadcast(pIntent);
-                    }
-                    else if(characteristic.getValue().length == 8){
-                        Consts.ackLiveDataStream[7] = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 7).byteValue();
+                            Intent pIntent = new Intent("GetBloodPressureData");
+                            pIntent.putExtra(Consts.SYSTOLIC, characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 14));
+                            pIntent.putExtra(Consts.DIASTOLIC, characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 13));
+                            sendBroadcast(pIntent);
+                        } else if (characteristic.getValue().length == 8) {
+                            Consts.ackLiveDataStream[7] = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 7).byteValue();
+                        }
+                    } else if (StepsActivity.waitingForData){
+                        if (characteristic.getValue().length == 20){
+                            Intent intent = new Intent("GetStepsData");
+
+                            byte[] stepArr = new byte[2];
+                            stepArr[0] = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 7).byteValue();
+                            stepArr[1] = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 8).byteValue();
+                            ByteBuffer byteBuffer = ByteBuffer.wrap(stepArr);
+                            short stepShortVal = byteBuffer.getShort();
+
+                            intent.putExtra(Consts.STEPS, (int) stepShortVal);
+                            sendBroadcast(intent);
+                        }
                     }
 
                 }

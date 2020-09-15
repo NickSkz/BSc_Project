@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.example.biosensordataanalyzer.Bluetooth.BluetoothAPIUtils;
 import com.example.biosensordataanalyzer.Connection.ConnectionActivity;
+import com.example.biosensordataanalyzer.StaticData.StepsActivity;
 import com.example.biosensordataanalyzer.User.CurrentUser;
 import com.example.biosensordataanalyzer.MeasurmentsActivities.PressureActivity;
 import com.example.biosensordataanalyzer.MeasurmentsActivities.PulseActivity;
@@ -42,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
     private Button pulseBtn;
     private Button pressureBtn;
     private Button editBtn;
+    private Button stepsBtn;
 
     private int EDIT_USER_ACTIVITY = 1;
     private TextView mainUserText;
@@ -70,6 +72,8 @@ public class MainActivity extends AppCompatActivity {
         editBtn = findViewById(R.id.edit_usr_btn);
         editBtn.setOnClickListener(view -> startActivityForResult(new Intent(MainActivity.this, EditUserInfoActivity.class), EDIT_USER_ACTIVITY));
 
+        stepsBtn = findViewById(R.id.steps_btn);
+        stepsBtn.setOnClickListener(view -> startActivity(new Intent(MainActivity.this, StepsActivity.class)));
 
         /*
          * Enable and turn the bluetooth on
