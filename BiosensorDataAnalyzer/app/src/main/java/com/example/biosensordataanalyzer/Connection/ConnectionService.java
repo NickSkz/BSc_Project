@@ -18,6 +18,8 @@ import android.widget.Toast;
 import com.example.biosensordataanalyzer.Bluetooth.BluetoothAPIUtils;
 import com.example.biosensordataanalyzer.Constants.Consts;
 import com.example.biosensordataanalyzer.MeasurmentsActivities.PulseActivity;
+import com.example.biosensordataanalyzer.StaticData.CaloriesActivity;
+import com.example.biosensordataanalyzer.StaticData.DistanceActivity;
 import com.example.biosensordataanalyzer.StaticData.StepsActivity;
 
 import java.nio.ByteBuffer;
@@ -233,15 +235,43 @@ public class ConnectionService extends Service {
                         if (characteristic.getValue().length == 20){
                             Intent intent = new Intent("GetStepsData");
 
-                            byte[] stepArr = new byte[2];
-                            stepArr[0] = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 7).byteValue();
-                            stepArr[1] = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 8).byteValue();
+                            byte[] stepArr = new byte[4];
+                            stepArr[0] = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 5).byteValue();
+                            stepArr[1] = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 6).byteValue();
+                            stepArr[2] = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 7).byteValue();
+                            stepArr[3] = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 8).byteValue();
                             ByteBuffer byteBuffer = ByteBuffer.wrap(stepArr);
-                            short stepShortVal = byteBuffer.getShort();
+                            int stepShortVal = byteBuffer.getInt();
 
-                            intent.putExtra(Consts.STEPS, (int) stepShortVal);
+                            intent.putExtra(Consts.STEPS, stepShortVal);
                             sendBroadcast(intent);
                         }
+                    } else if (CaloriesActivity.waitingForData){
+                        Intent intent = new Intent("GetCaloriesData");
+
+                        byte[] caloriesArr = new byte[4];
+                        caloriesArr[0] = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 13).byteValue();
+                        caloriesArr[1] = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 14).byteValue();
+                        caloriesArr[2] = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 15).byteValue();
+                        caloriesArr[3] = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 16).byteValue();
+                        ByteBuffer byteBuffer = ByteBuffer.wrap(caloriesArr);
+                        int caloriesShortVal = byteBuffer.getInt();
+
+                        intent.putExtra(Consts.CALORIES, caloriesShortVal);
+                        sendBroadcast(intent);
+                    } else if (DistanceActivity.waitingForData){
+                        Intent intent = new Intent("GetDistanceData");
+
+                        byte[] distanceArr = new byte[4];
+                        distanceArr[0] = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 9).byteValue();
+                        distanceArr[1] = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 10).byteValue();
+                        distanceArr[2] = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 11).byteValue();
+                        distanceArr[3] = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 12).byteValue();
+                        ByteBuffer byteBuffer = ByteBuffer.wrap(distanceArr);
+                        int distanceShortVal = byteBuffer.getInt();
+
+                        intent.putExtra(Consts.DISTANCE, distanceShortVal);
+                        sendBroadcast(intent);
                     }
 
                 }

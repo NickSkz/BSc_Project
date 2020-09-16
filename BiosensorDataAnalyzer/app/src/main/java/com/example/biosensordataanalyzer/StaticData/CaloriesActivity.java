@@ -13,36 +13,33 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.biosensordataanalyzer.Bluetooth.BluetoothAPIUtils;
-import com.example.biosensordataanalyzer.Connection.ConnectionActivity;
 import com.example.biosensordataanalyzer.Constants.Consts;
 import com.example.biosensordataanalyzer.R;
 
-public class StepsActivity extends AppCompatActivity {
+public class CaloriesActivity extends AppCompatActivity {
 
-    private static final String TAG = "StepsActivity";
-
+    private static final String TAG = "CaloriesActivity";
 
     private Button refreshBtn;
-    private TextView stepsView;
+    private TextView caloriesView;
 
     public static boolean waitingForData;
-    private int steps;
+    private int calories;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_steps);
+        setContentView(R.layout.activity_calories);
 
-        stepsView = findViewById(R.id.steps_view);
+        caloriesView = findViewById(R.id.calories_view);
 
-        refreshBtn = findViewById(R.id.refresh_btn);
-        refreshBtn.setOnClickListener(view -> requestSteps());
+        refreshBtn = findViewById(R.id.refresh2_btn);
+        refreshBtn.setOnClickListener(view -> requestCalories());
 
-        requestSteps();
+        requestCalories();
     }
 
-
-    private void requestSteps(){
+    private void requestCalories(){
         waitingForData = true;
 
         BluetoothGattCharacteristic writeChar = BluetoothAPIUtils.bluetoothGatt.getService(Consts.THE_SERVICE).getCharacteristic(Consts.THE_WRITE_CHAR);
@@ -53,25 +50,25 @@ public class StepsActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-        registerReceiver(stepsReceiver, new IntentFilter("GetStepsData"));
+        registerReceiver(caloriesReceiver, new IntentFilter("GetCaloriesData"));
     }
 
     @Override
     protected void onPause() {
-        unregisterReceiver(stepsReceiver);
+        unregisterReceiver(caloriesReceiver);
         super.onPause();
     }
 
-    private BroadcastReceiver stepsReceiver = new BroadcastReceiver() {
+    private BroadcastReceiver caloriesReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             /*
              * Get values as IntExtra
              */
-            steps = intent.getIntExtra(Consts.STEPS,-1);
+            calories = intent.getIntExtra(Consts.CALORIES,-1);
 
-            stepsView.setText(String.valueOf(steps));
-            Log.i(TAG, "Steps: " + steps);
+            caloriesView.setText(String.valueOf(calories));
+            Log.i(TAG, "Calories: " + calories);
 
             waitingForData = false;
         }

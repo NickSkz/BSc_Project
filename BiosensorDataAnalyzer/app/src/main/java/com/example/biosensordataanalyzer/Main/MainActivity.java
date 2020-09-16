@@ -17,6 +17,8 @@ import android.widget.Toast;
 
 import com.example.biosensordataanalyzer.Bluetooth.BluetoothAPIUtils;
 import com.example.biosensordataanalyzer.Connection.ConnectionActivity;
+import com.example.biosensordataanalyzer.StaticData.CaloriesActivity;
+import com.example.biosensordataanalyzer.StaticData.DistanceActivity;
 import com.example.biosensordataanalyzer.StaticData.StepsActivity;
 import com.example.biosensordataanalyzer.User.CurrentUser;
 import com.example.biosensordataanalyzer.MeasurmentsActivities.PressureActivity;
@@ -44,6 +46,8 @@ public class MainActivity extends AppCompatActivity {
     private Button pressureBtn;
     private Button editBtn;
     private Button stepsBtn;
+    private Button caloriesBtn;
+    private Button distanceBtn;
 
     private int EDIT_USER_ACTIVITY = 1;
     private TextView mainUserText;
@@ -74,6 +78,12 @@ public class MainActivity extends AppCompatActivity {
 
         stepsBtn = findViewById(R.id.steps_btn);
         stepsBtn.setOnClickListener(view -> startActivity(new Intent(MainActivity.this, StepsActivity.class)));
+
+        caloriesBtn = findViewById(R.id.calories_btn);
+        caloriesBtn.setOnClickListener(view -> startActivity(new Intent(MainActivity.this, CaloriesActivity.class)));
+
+        distanceBtn = findViewById(R.id.distance_btn);
+        distanceBtn.setOnClickListener(view -> startActivity(new Intent(MainActivity.this, DistanceActivity.class)));
 
         /*
          * Enable and turn the bluetooth on

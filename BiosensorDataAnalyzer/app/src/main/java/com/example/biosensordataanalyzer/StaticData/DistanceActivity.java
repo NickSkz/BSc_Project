@@ -13,36 +13,33 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.biosensordataanalyzer.Bluetooth.BluetoothAPIUtils;
-import com.example.biosensordataanalyzer.Connection.ConnectionActivity;
 import com.example.biosensordataanalyzer.Constants.Consts;
 import com.example.biosensordataanalyzer.R;
 
-public class StepsActivity extends AppCompatActivity {
+public class DistanceActivity extends AppCompatActivity {
 
-    private static final String TAG = "StepsActivity";
-
+    private static final String TAG = "DistanceActivity";
 
     private Button refreshBtn;
-    private TextView stepsView;
+    private TextView distanceView;
 
     public static boolean waitingForData;
-    private int steps;
+    private int distance;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_steps);
+        setContentView(R.layout.activity_distance);
 
-        stepsView = findViewById(R.id.steps_view);
+        distanceView = findViewById(R.id.distance_view);
 
-        refreshBtn = findViewById(R.id.refresh_btn);
-        refreshBtn.setOnClickListener(view -> requestSteps());
+        refreshBtn = findViewById(R.id.refresh3_btn);
+        refreshBtn.setOnClickListener(view -> requestDistance());
 
-        requestSteps();
+        requestDistance();
     }
 
-
-    private void requestSteps(){
+    private void requestDistance(){
         waitingForData = true;
 
         BluetoothGattCharacteristic writeChar = BluetoothAPIUtils.bluetoothGatt.getService(Consts.THE_SERVICE).getCharacteristic(Consts.THE_WRITE_CHAR);
@@ -53,28 +50,27 @@ public class StepsActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-        registerReceiver(stepsReceiver, new IntentFilter("GetStepsData"));
+        registerReceiver(distanceReceiver, new IntentFilter("GetDistanceData"));
     }
 
     @Override
     protected void onPause() {
-        unregisterReceiver(stepsReceiver);
+        unregisterReceiver(distanceReceiver);
         super.onPause();
     }
 
-    private BroadcastReceiver stepsReceiver = new BroadcastReceiver() {
+    private BroadcastReceiver distanceReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             /*
              * Get values as IntExtra
              */
-            steps = intent.getIntExtra(Consts.STEPS,-1);
+            distance = intent.getIntExtra(Consts.DISTANCE,-1);
 
-            stepsView.setText(String.valueOf(steps));
-            Log.i(TAG, "Steps: " + steps);
+            distanceView.setText(String.valueOf(distance));
+            Log.i(TAG, "Distance: " +  distance);
 
             waitingForData = false;
         }
     };
-
 }
