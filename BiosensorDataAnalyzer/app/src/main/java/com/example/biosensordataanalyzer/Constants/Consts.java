@@ -12,6 +12,7 @@ public class Consts {
     static final public String STEPS = "steps";
     static final public String CALORIES = "calories";
     static final public String DISTANCE = "distance";
+    static final public String BATTERY = "battery";
 
     static final public String SYSTOLIC = "systolic";
     static final public String DIASTOLIC = "diastolic";
@@ -31,6 +32,8 @@ public class Consts {
     static final public byte[] ackLiveDataStream = {(byte)-85, (byte)16, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)-1};
 
     static final public byte[] getStaticData = {(byte)-85, (byte)0, (byte)0, (byte)5, (byte)10, (byte)156, (byte)0, (byte)24, (byte)5, (byte)0, (byte)33, (byte)0, (byte)0};
+
+    static final public byte[] getBatteryLevel = {(byte)-85, (byte)0, (byte)0, (byte)5, (byte)196, (byte)57, (byte)0, (byte)9, (byte)2, (byte)0, (byte)20, (byte)0, (byte)0};
 
     // Name of text file where we store all user's data
     static final public String userFileName = "currentUser.txt";

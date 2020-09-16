@@ -6,17 +6,23 @@ import androidx.appcompat.widget.Toolbar;
 import android.Manifest;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothManager;
 import android.content.ActivityNotFoundException;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.biosensordataanalyzer.Bluetooth.BluetoothAPIUtils;
 import com.example.biosensordataanalyzer.Connection.ConnectionActivity;
+import com.example.biosensordataanalyzer.Connection.ConnectionService;
+import com.example.biosensordataanalyzer.Constants.Consts;
 import com.example.biosensordataanalyzer.StaticData.CaloriesActivity;
 import com.example.biosensordataanalyzer.StaticData.DistanceActivity;
 import com.example.biosensordataanalyzer.StaticData.StepsActivity;
@@ -35,6 +41,9 @@ public class MainActivity extends AppCompatActivity {
     // Declaration of current logged user
     public static CurrentUser currentUser;
 
+    public static boolean waitingForBattery;
+    private int batteryLevel;
+
 
     /*
      * Declare graphical components
@@ -48,9 +57,12 @@ public class MainActivity extends AppCompatActivity {
     private Button stepsBtn;
     private Button caloriesBtn;
     private Button distanceBtn;
+    private Button batteryCheckBtn;
 
     private int EDIT_USER_ACTIVITY = 1;
     private TextView mainUserText;
+
+    private TextView batteryView;
 
 
     @Override
@@ -84,6 +96,12 @@ public class MainActivity extends AppCompatActivity {
 
         distanceBtn = findViewById(R.id.distance_btn);
         distanceBtn.setOnClickListener(view -> startActivity(new Intent(MainActivity.this, DistanceActivity.class)));
+
+
+        batteryView = findViewById(R.id.baterry_view);
+
+        batteryCheckBtn = findViewById(R.id.check_bat_but);
+        batteryCheckBtn.setOnClickListener(view -> batteryLevelCheck());
 
         /*
          * Enable and turn the bluetooth on
@@ -132,6 +150,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    private void batteryLevelCheck(){
+        if(ConnectionService.readyForCommands) {
+            BluetoothGattCharacteristic writeChar = BluetoothAPIUtils.bluetoothGatt.getService(Consts.THE_SERVICE).getCharacteristic(Consts.THE_WRITE_CHAR);
+            writeChar.setValue(Consts.getBatteryLevel);
+            BluetoothAPIUtils.bluetoothGatt.writeCharacteristic(writeChar);
+
+            waitingForBattery = true;
+        }
+    }
+
 
     // Perform appropriate toast according to Bluetooth action
     @Override
@@ -153,6 +181,33 @@ public class MainActivity extends AppCompatActivity {
         }
 
         mainUserText.setText(currentUser.name);
-
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        registerReceiver(batteryReceiver, new IntentFilter("GetBatteryData"));
+    }
+
+    @Override
+    protected void onPause() {
+        unregisterReceiver(batteryReceiver);
+        super.onPause();
+    }
+
+    private BroadcastReceiver batteryReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            /*
+             * Get values as IntExtra
+             */
+            batteryLevel = intent.getIntExtra(Consts.BATTERY,-1);
+
+            batteryView.setText(String.valueOf(batteryLevel) + "%");
+            Log.i(TAG, "Battery: " + batteryLevel);
+
+            waitingForBattery = false;
+        }
+    };
+
 }
