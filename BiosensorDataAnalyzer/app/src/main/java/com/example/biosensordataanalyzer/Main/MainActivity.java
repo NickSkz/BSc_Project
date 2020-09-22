@@ -32,6 +32,14 @@ import com.example.biosensordataanalyzer.MeasurmentsActivities.PulseActivity;
 import com.example.biosensordataanalyzer.R;
 import com.example.biosensordataanalyzer.User.EditUserInfoActivity;
 
+import java.nio.ByteBuffer;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+
 
 // Main activity launched after start of the application
 public class MainActivity extends AppCompatActivity {
@@ -58,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
     private Button caloriesBtn;
     private Button distanceBtn;
     private Button batteryCheckBtn;
+    private Button calibrateBtn;
 
     private int EDIT_USER_ACTIVITY = 1;
     private TextView mainUserText;
@@ -102,6 +111,15 @@ public class MainActivity extends AppCompatActivity {
 
         batteryCheckBtn = findViewById(R.id.check_bat_but);
         batteryCheckBtn.setOnClickListener(view -> batteryLevelCheck());
+
+        calibrateBtn = findViewById(R.id.calibrate_btn);
+        calibrateBtn.setOnClickListener(view -> {
+            try {
+                calibrateBand();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
 
         /*
          * Enable and turn the bluetooth on
@@ -159,6 +177,103 @@ public class MainActivity extends AppCompatActivity {
             waitingForBattery = true;
         }
     }
+
+
+    public static CountDownLatch zeroingDataLatch = new CountDownLatch(1);
+    public static boolean waitingForZeroing;
+
+    private void calibrateBand() throws InterruptedException {
+        if(ConnectionService.readyForCommands) {
+
+
+            StringBuffer dateTimeBits = new StringBuffer();
+
+            Calendar calendar = Calendar.getInstance();
+            int seconds = calendar.get(Calendar.SECOND);
+            String secondBits = String.format("%6s", Integer.toBinaryString(seconds)).replace(' ', '0');
+            int minutes = calendar.get(Calendar.MINUTE);
+            String minutesBits = String.format("%6s", Integer.toBinaryString(minutes)).replace(' ', '0');
+            int hours = calendar.get(Calendar.HOUR_OF_DAY);
+            String hourBits = String.format("%5s", Integer.toBinaryString(hours)).replace(' ', '0');
+            int days = calendar.get(Calendar.DAY_OF_MONTH);
+            String dayBits = String.format("%5s", Integer.toBinaryString(days)).replace(' ', '0');
+            int months = calendar.get(Calendar.MONTH) + 1;
+            String monthBits = String.format("%4s", Integer.toBinaryString(months)).replace(' ', '0');
+            int years = calendar.get(Calendar.YEAR);
+            String yearBits = Integer.toBinaryString(Integer.parseInt(String.valueOf(years).substring(2)));
+
+            dateTimeBits.append(yearBits);
+            dateTimeBits.append(monthBits);
+            dateTimeBits.append(dayBits);
+            dateTimeBits.append(hourBits);
+            dateTimeBits.append(minutesBits);
+            dateTimeBits.append(secondBits);
+
+            Log.i(TAG, dateTimeBits.toString());
+
+
+            int passedValue = Integer.parseInt(dateTimeBits.toString(), 2);
+
+            Consts.calibrateBand[13] = (byte)(passedValue >>> 24);
+            Consts.calibrateBand[14] = (byte)(passedValue >>> 16);
+            Consts.calibrateBand[15] = (byte)(passedValue >>> 8);
+            Consts.calibrateBand[16] = (byte)passedValue;
+
+            byte[] tempArr = new byte[9];
+            System.arraycopy(Consts.calibrateBand, 8, tempArr, 0, 9);
+            prepareAccordingToDecompiler(tempArr, false, false, 0, 8);
+
+            Log.i(TAG, String.valueOf(passedValue));
+            Log.i(TAG, Arrays.toString(Consts.calibrateBand));
+
+
+            /*
+             * Really, really terrible version (send date from the past to zero out data, then send current datetime :) )
+             */
+            waitingForZeroing = true;
+            BluetoothGattCharacteristic writeChar = BluetoothAPIUtils.bluetoothGatt.getService(Consts.THE_SERVICE).getCharacteristic(Consts.THE_WRITE_CHAR);
+            writeChar.setValue(Consts.zeroOutStaticData);
+            BluetoothAPIUtils.bluetoothGatt.writeCharacteristic(writeChar);
+
+            // Latch it, until something releases it, or certain amount of time passes - to avoid deadlock
+            zeroingDataLatch = new CountDownLatch(1);
+            zeroingDataLatch.await(5, TimeUnit.SECONDS);
+
+            BluetoothGattCharacteristic writeDateChar = BluetoothAPIUtils.bluetoothGatt.getService(Consts.THE_SERVICE).getCharacteristic(Consts.THE_WRITE_CHAR);
+            writeDateChar.setValue(Consts.calibrateBand);
+            BluetoothAPIUtils.bluetoothGatt.writeCharacteristic(writeDateChar);
+        }
+    }
+
+
+    /*
+     * METHOD BASED ON DECOMPILED .apk, variable names slightly changed according to JADX decompiler (to see raw decompiled
+     * functions go to decompilation folder in project's main directory)
+     */
+    private static void prepareAccordingToDecompiler(byte[] bArr, boolean z, boolean z2, int i, int i2) {
+        int i3;
+        int i4;
+        if (bArr != null) {
+            i4 = bArr.length;
+            i3 = 0;
+            for (int idx = 0; idx < i4; ++idx) {
+                i3 = (i3 >> 8) ^ Consts.crc16_table[(bArr[idx] ^ i3) & 255];
+            }
+        } else {
+            i4 = 0;
+            i3 = 0;
+        }
+
+        Consts.calibrateBand[0] = (byte)-85;
+        Consts.calibrateBand[1] = (byte) ((z2 ? z ? 48 : 16 : 0) | (i & 15));
+        Consts.calibrateBand[2] = (byte) ((i4 >> 8) & 255);
+        Consts.calibrateBand[3] = (byte) (i4 & 255);
+        Consts.calibrateBand[4] = (byte) ((i3 >> 8) & 255);
+        Consts.calibrateBand[5] = (byte) (i3 & 255);
+        Consts.calibrateBand[6] = (byte) ((i2 >> 8) & 255);
+        Consts.calibrateBand[7] = (byte) (i2 & 255);
+    }
+
 
 
     // Perform appropriate toast according to Bluetooth action

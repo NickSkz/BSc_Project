@@ -175,4 +175,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView10" />
 
+    <Button
+        android:id="@+id/calibrate_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="43dp"
+        android:layout_marginTop="28dp"
+        android:text="CALIBRATE BAND"
+        app:layout_constraintEnd_toStartOf="@+id/connection_settings_btn"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView2" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

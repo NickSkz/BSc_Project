@@ -286,6 +286,11 @@ public class ConnectionService extends Service {
                             intent.putExtra(Consts.BATTERY, characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 5));
                             sendBroadcast(intent);
                         }
+                    } else if (MainActivity.waitingForZeroing){
+                        if(characteristic.getValue().length == 8){
+                            MainActivity.waitingForZeroing = false;
+                            MainActivity.zeroingDataLatch.countDown(); //To 0
+                        }
                     }
 
                 }
