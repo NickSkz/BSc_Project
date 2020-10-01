@@ -18,6 +18,8 @@ public class BluetoothAPIUtils {
     // Declare Bluetooth Gatt instance
     static public BluetoothGatt bluetoothGatt;
 
+    static public int rssi;
+
     private BluetoothAPIUtils(){
 
     };

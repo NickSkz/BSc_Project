@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/dark_triangles"
     tools:context=".MeasurmentsActivities.PulseActivity">
 
     <include
@@ -16,6 +17,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
         android:layout_marginEnd="56dp"
+        android:textColor="#A4C389"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.775"
@@ -28,6 +30,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
         android:layout_marginEnd="56dp"
+        android:textColor="#A4C389"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.545"
@@ -54,6 +57,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
         android:text="Pulse:"
+        android:textColor="#A4C389"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.166"
@@ -66,6 +70,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
         android:text="Oxygen:"
+        android:textColor="#A4C389"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.178"

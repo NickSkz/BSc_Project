@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/dark_triangles"
     tools:context=".Connection.ConnectionActivity">
 
     <include
@@ -12,20 +13,45 @@
 
     <ListView
         android:id="@+id/scan_list_view"
-        android:layout_width="323dp"
-        android:layout_height="492dp"
+        android:layout_width="320dp"
+        android:layout_height="336dp"
         android:layout_marginEnd="20dp"
-        android:layout_marginBottom="12dp"
+        android:layout_marginBottom="104dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
     <Button
         android:id="@+id/scan_button"
-        android:layout_width="323dp"
+        android:layout_width="320dp"
         android:layout_height="43dp"
         android:layout_marginEnd="20dp"
+        android:layout_marginBottom="8dp"
         android:text="@string/scan_button"
         app:layout_constraintBottom_toTopOf="@+id/scan_list_view"
         app:layout_constraintEnd_toEndOf="parent" />
+
+    <Button
+        android:id="@+id/info_button"
+        android:layout_width="210dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:background="#174944"
+        android:text="SmartBand Information"
+        android:textColor="#A4C389"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/scan_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="Connect to your smartband!"
+        android:textColor="#A4C389"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/include" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

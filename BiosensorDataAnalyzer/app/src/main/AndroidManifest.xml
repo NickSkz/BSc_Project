@@ -22,9 +22,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".StaticData.DistanceActivity"></activity>
-        <activity android:name=".StaticData.CaloriesActivity" />
-        <activity android:name=".StaticData.StepsActivity" />
+        <activity android:name=".StaticData.TrainingActivity"></activity>
         <activity android:name=".User.EditUserInfoActivity" />
         <activity android:name=".MeasurmentsActivities.PressureActivity" />
         <activity android:name=".MeasurmentsActivities.PulseActivity" />

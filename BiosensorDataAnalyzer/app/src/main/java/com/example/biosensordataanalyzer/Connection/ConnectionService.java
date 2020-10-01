@@ -18,10 +18,10 @@ import android.widget.Toast;
 import com.example.biosensordataanalyzer.Bluetooth.BluetoothAPIUtils;
 import com.example.biosensordataanalyzer.Constants.Consts;
 import com.example.biosensordataanalyzer.Main.MainActivity;
-import com.example.biosensordataanalyzer.MeasurmentsActivities.PulseActivity;
-import com.example.biosensordataanalyzer.StaticData.CaloriesActivity;
-import com.example.biosensordataanalyzer.StaticData.DistanceActivity;
-import com.example.biosensordataanalyzer.StaticData.StepsActivity;
+import com.example.biosensordataanalyzer.StaticData.CaloriesFragment;
+import com.example.biosensordataanalyzer.StaticData.DistanceFragment;
+import com.example.biosensordataanalyzer.StaticData.StepsFragment;
+import com.example.biosensordataanalyzer.StaticData.TrainingActivity;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -235,39 +235,17 @@ public class ConnectionService extends Service {
                         } else if (characteristic.getValue().length == 8) {
                             Consts.ackLiveDataStream[7] = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 7).byteValue();
                         }
-                    } else if (StepsActivity.waitingForData){
-                        if (characteristic.getValue().length == 20){
-                            Intent intent = new Intent("GetStepsData");
+                    } else if (TrainingActivity.waitingForData){
+                        if (characteristic.getValue().length == 20) {
+                            Intent intent = new Intent("GetTrainingData");
 
                             byte[] stepArr = new byte[4];
                             stepArr[0] = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 5).byteValue();
                             stepArr[1] = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 6).byteValue();
                             stepArr[2] = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 7).byteValue();
                             stepArr[3] = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 8).byteValue();
-                            ByteBuffer byteBuffer = ByteBuffer.wrap(stepArr);
-                            int stepShortVal = byteBuffer.getInt();
-
-                            intent.putExtra(Consts.STEPS, stepShortVal);
-                            sendBroadcast(intent);
-                        }
-                    } else if (CaloriesActivity.waitingForData){
-                        if (characteristic.getValue().length == 20) {
-                            Intent intent = new Intent("GetCaloriesData");
-
-                            byte[] caloriesArr = new byte[4];
-                            caloriesArr[0] = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 13).byteValue();
-                            caloriesArr[1] = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 14).byteValue();
-                            caloriesArr[2] = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 15).byteValue();
-                            caloriesArr[3] = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 16).byteValue();
-                            ByteBuffer byteBuffer = ByteBuffer.wrap(caloriesArr);
-                            int caloriesShortVal = byteBuffer.getInt();
-
-                            intent.putExtra(Consts.CALORIES, caloriesShortVal);
-                            sendBroadcast(intent);
-                        }
-                    } else if (DistanceActivity.waitingForData){
-                        if (characteristic.getValue().length == 20) {
-                            Intent intent = new Intent("GetDistanceData");
+                            ByteBuffer byte0Buffer = ByteBuffer.wrap(stepArr);
+                            int stepShortVal = byte0Buffer.getInt();
 
                             byte[] distanceArr = new byte[4];
                             distanceArr[0] = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 9).byteValue();
@@ -277,19 +255,29 @@ public class ConnectionService extends Service {
                             ByteBuffer byteBuffer = ByteBuffer.wrap(distanceArr);
                             int distanceShortVal = byteBuffer.getInt();
 
+                            byte[] caloriesArr = new byte[4];
+                            caloriesArr[0] = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 13).byteValue();
+                            caloriesArr[1] = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 14).byteValue();
+                            caloriesArr[2] = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 15).byteValue();
+                            caloriesArr[3] = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 16).byteValue();
+                            ByteBuffer byte2Buffer = ByteBuffer.wrap(caloriesArr);
+                            int caloriesShortVal = byte2Buffer.getInt();
+
+                            intent.putExtra(Consts.STEPS, stepShortVal);
                             intent.putExtra(Consts.DISTANCE, distanceShortVal);
+                            intent.putExtra(Consts.CALORIES, caloriesShortVal);
                             sendBroadcast(intent);
                         }
-                    } else if (MainActivity.waitingForBattery){
+                    } else if (ConnectionActivity.waitingForBattery){
                         if(characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 0) != 171) {
                             Intent intent = new Intent("GetBatteryData");
                             intent.putExtra(Consts.BATTERY, characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 5));
                             sendBroadcast(intent);
                         }
-                    } else if (MainActivity.waitingForZeroing){
+                    } else if (ConnectionActivity.waitingForZeroing){
                         if(characteristic.getValue().length == 8){
-                            MainActivity.waitingForZeroing = false;
-                            MainActivity.zeroingDataLatch.countDown(); //To 0
+                            ConnectionActivity.waitingForZeroing = false;
+                            ConnectionActivity.zeroingDataLatch.countDown(); //To 0
                         }
                     }
 

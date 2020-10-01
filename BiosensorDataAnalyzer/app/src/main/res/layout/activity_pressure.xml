@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/dark_triangles"
     tools:context=".MeasurmentsActivities.PressureActivity">
 
 
@@ -18,6 +19,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
         android:layout_marginEnd="56dp"
+        android:textColor="#A4C389"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.916"
@@ -30,6 +32,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
         android:layout_marginEnd="56dp"
+        android:textColor="#A4C389"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.918"
@@ -56,6 +59,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
         android:text="Diastolic:"
+        android:textColor="#A4C389"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.153"
@@ -68,6 +72,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
         android:text="Systolic:"
+        android:textColor="#A4C389"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.148"
