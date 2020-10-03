@@ -1,12 +1,15 @@
 package com.example.biosensordataanalyzer.StaticData;
 
+import android.app.Activity;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Build;
 import android.os.Bundle;
 
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
@@ -20,6 +23,17 @@ import com.example.biosensordataanalyzer.Bluetooth.BluetoothAPIUtils;
 import com.example.biosensordataanalyzer.Connection.ConnectionActivity;
 import com.example.biosensordataanalyzer.Constants.Consts;
 import com.example.biosensordataanalyzer.R;
+import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.series.DataPoint;
+import com.jjoe64.graphview.series.LineGraphSeries;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+import java.util.Map;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -34,6 +48,9 @@ public class DistanceFragment extends Fragment {
 
     public static boolean waitingForData;
     private int distance;
+
+    private LineGraphSeries<DataPoint> series;
+    private GraphView graph;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -75,12 +92,17 @@ public class DistanceFragment extends Fragment {
         }
     }
 
+    //RESET PO 24
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_distance, container, false);
 
         distanceView = v.findViewById(R.id.distance_view);
+
+        graph = v.findViewById(R.id.graph_view);
+        series = new LineGraphSeries<>();
 
         Thread thr = new Thread(new Runnable() {
             @Override
@@ -89,6 +111,8 @@ public class DistanceFragment extends Fragment {
             }
         });
         thr.start();
+
+        prepareGraph();
 
         // Inflate the layout for this fragment
         return v;
@@ -115,6 +139,22 @@ public class DistanceFragment extends Fragment {
             }
         });
 
+        //prepareGraph();
     }
+
+
+    private void prepareGraph(){
+
+        TrainingActivity act = (TrainingActivity) getActivity();
+        int idx = 0;
+
+        for (Map.Entry<String, Integer> entry : act.processedDays.entrySet()){
+            series.appendData(new DataPoint(idx, entry.getValue()), true, 100);
+            ++idx;
+        }
+
+        graph.addSeries(series);
+    }
+
 
 }

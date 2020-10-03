@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
@@ -16,10 +17,26 @@ import android.widget.TextView;
 import com.example.biosensordataanalyzer.Bluetooth.BluetoothAPIUtils;
 import com.example.biosensordataanalyzer.Connection.ConnectionActivity;
 import com.example.biosensordataanalyzer.Constants.Consts;
+import com.example.biosensordataanalyzer.Main.MainActivity;
 import com.example.biosensordataanalyzer.R;
+import com.example.biosensordataanalyzer.User.CurrentUser;
 import com.example.biosensordataanalyzer.User.UserDataPageAdapter;
 import com.google.android.material.tabs.TabLayout;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
 public class TrainingActivity extends AppCompatActivity {
@@ -28,6 +45,9 @@ public class TrainingActivity extends AppCompatActivity {
 
     public static boolean waitingForData;
     public static CountDownLatch waitForDataLatch;
+
+    Map<String, Integer> processedDays;
+    Map<String, Integer> realDays;
 
     int steps, distance, calories;
 
@@ -40,6 +60,10 @@ public class TrainingActivity extends AppCompatActivity {
 
         refreshBtn = findViewById(R.id.refresh_trainbutton);
         refreshBtn.setOnClickListener(view -> requestSteps());
+
+        realDays = new LinkedHashMap<>();
+        processedDays = new LinkedHashMap<>();
+        prepareDays();
 
         TabLayout tabLayout = findViewById(R.id.tab_trainlayout);
 
@@ -65,6 +89,12 @@ public class TrainingActivity extends AppCompatActivity {
         });
 
         requestSteps();
+
+        try {
+            transferData();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -90,6 +120,76 @@ public class TrainingActivity extends AppCompatActivity {
         BluetoothAPIUtils.bluetoothGatt.writeCharacteristic(writeChar);
     }
 
+    private void prepareDays(){
+        Calendar calendar = Calendar.getInstance();
+        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd", Locale.GERMAN);
+
+        calendar.add(Calendar.DATE, 0);
+        processedDays.put(dateFormat.format(calendar.getTime()), 0);
+        calendar.add(Calendar.DATE, -1);
+        processedDays.put(dateFormat.format(calendar.getTime()), 2);
+        calendar.add(Calendar.DATE, -1);
+        processedDays.put(dateFormat.format(calendar.getTime()), 4);
+        calendar.add(Calendar.DATE, -1);
+        processedDays.put(dateFormat.format(calendar.getTime()), 6);
+        calendar.add(Calendar.DATE, -1);
+        processedDays.put(dateFormat.format(calendar.getTime()), 8);
+        calendar.add(Calendar.DATE, -1);
+        processedDays.put(dateFormat.format(calendar.getTime()), 10);
+        calendar.add(Calendar.DATE, -1);
+        processedDays.put(dateFormat.format(calendar.getTime()), 12);
+
+    }
+
+    //Ad saving on quit !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+    public void save(Context context) throws IOException {
+        FileOutputStream fileOutputStream = context.openFileOutput(Consts.lastDaysFileName, Context.MODE_PRIVATE);
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+        objectOutputStream.writeObject(processedDays);
+        objectOutputStream.close();
+        fileOutputStream.close();
+    }
+
+
+    public void load(Context context) throws IOException, ClassNotFoundException {
+        FileInputStream fileInputStream = context.openFileInput(Consts.lastDaysFileName);
+        ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+        realDays = (LinkedHashMap) objectInputStream.readObject();
+        objectInputStream.close();
+        fileInputStream.close();
+    }
+
+
+    private void transferData() throws IOException {
+
+        prepareDays();
+
+        try {
+            load(getApplicationContext());
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+        for (Map.Entry<String, Integer> entry : realDays.entrySet()){
+            Log.i(TAG, entry.getKey() + " : " + String.valueOf(entry.getValue()));
+        }
+
+        int idx = 0;
+        for (Map.Entry<String, Integer> entry : processedDays.entrySet()){
+            if(realDays.containsKey(entry.getKey())){
+                processedDays.put(entry.getKey(), entry.getValue() + realDays.get(entry.getKey()));
+            }
+        }
+
+        for (Map.Entry<String, Integer> entry : processedDays.entrySet()){
+            Log.i(TAG, entry.getKey() + " : " + String.valueOf(entry.getValue()));
+        }
+
+        save(getApplicationContext());
+    }
+
+
     @Override
     public void onResume() {
         super.onResume();
@@ -111,6 +211,12 @@ public class TrainingActivity extends AppCompatActivity {
             steps = intent.getIntExtra(Consts.STEPS,-1);
             distance = intent.getIntExtra(Consts.DISTANCE,-1);
             calories = intent.getIntExtra(Consts.CALORIES,-1);
+
+            Calendar calendar = Calendar.getInstance();
+            DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd", Locale.GERMAN);
+
+            calendar.add(Calendar.DATE, 0);
+            processedDays.put(dateFormat.format(calendar.getTime()), steps);
 
             waitingForData = false;
             waitForDataLatch.countDown();
