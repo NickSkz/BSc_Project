@@ -6,6 +6,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.IntentSender;
+import android.graphics.Color;
+import android.icu.util.LocaleData;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -19,21 +22,23 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.example.biosensordataanalyzer.Bluetooth.BluetoothAPIUtils;
-import com.example.biosensordataanalyzer.Connection.ConnectionActivity;
-import com.example.biosensordataanalyzer.Constants.Consts;
+
 import com.example.biosensordataanalyzer.R;
+import com.jjoe64.graphview.DefaultLabelFormatter;
 import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.GridLabelRenderer;
+import com.jjoe64.graphview.series.BarGraphSeries;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -46,11 +51,13 @@ public class DistanceFragment extends Fragment {
 
     private TextView distanceView;
 
-    public static boolean waitingForData;
     private int distance;
 
-    private LineGraphSeries<DataPoint> series;
+    private BarGraphSeries<DataPoint> series;
     private GraphView graph;
+    private GridLabelRenderer gridLabelRenderer;
+
+    ArrayList<Integer> stepVals;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -90,9 +97,13 @@ public class DistanceFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
+        dateFormat = new SimpleDateFormat("dd/MM", Locale.ENGLISH);
+        stepVals = new ArrayList<>();
     }
 
     //RESET PO 24
+    DateFormat dateFormat;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -102,7 +113,31 @@ public class DistanceFragment extends Fragment {
         distanceView = v.findViewById(R.id.distance_view);
 
         graph = v.findViewById(R.id.graph_view);
-        series = new LineGraphSeries<>();
+        graph.setTitle("Last 7 days");
+        graph.setTitleColor(Color.rgb(0, 100, 0));
+
+
+        gridLabelRenderer = graph.getGridLabelRenderer();
+        gridLabelRenderer.setGridColor(Color.rgb(0, 100, 0));
+        gridLabelRenderer.setHorizontalLabelsColor(Color.rgb(0, 100, 0));
+        gridLabelRenderer.setVerticalLabelsColor(Color.rgb(0, 100, 0));
+        gridLabelRenderer.setNumHorizontalLabels(7);
+        gridLabelRenderer.setPadding(32);
+        gridLabelRenderer.setHorizontalAxisTitle("Days from Today");
+        gridLabelRenderer.setHorizontalAxisTitleColor(Color.rgb(100, 100, 200));
+        gridLabelRenderer.setVerticalAxisTitleColor(Color.rgb(100, 100, 200));
+        gridLabelRenderer.setVerticalAxisTitle("Kilometers");
+        gridLabelRenderer.setLabelFormatter(new DefaultLabelFormatter(){
+            @Override
+            public String formatLabel(double value, boolean isValueX) {
+                if(isValueX){
+                    return ""+(int)value;
+                }
+
+                return super.formatLabel(value, isValueX);
+            }
+        });
+
 
         Thread thr = new Thread(new Runnable() {
             @Override
@@ -111,8 +146,6 @@ public class DistanceFragment extends Fragment {
             }
         });
         thr.start();
-
-        prepareGraph();
 
         // Inflate the layout for this fragment
         return v;
@@ -138,22 +171,41 @@ public class DistanceFragment extends Fragment {
                 Log.i(TAG, "Distance: " + distanceView);
             }
         });
-
-        //prepareGraph();
+        
+        prepareGraph();
+        graph.addSeries(series);
+        graph.refreshDrawableState();
     }
 
 
-    private void prepareGraph(){
-
+    public void prepareGraph(){
         TrainingActivity act = (TrainingActivity) getActivity();
-        int idx = 0;
 
-        for (Map.Entry<String, Integer> entry : act.processedDays.entrySet()){
-            series.appendData(new DataPoint(idx, entry.getValue()), true, 100);
+        Calendar calendar = Calendar.getInstance();
+        ArrayList<Date> dateVals = new ArrayList<>();
+
+        DataPoint[] points = new DataPoint[7];
+
+
+        int idx = 0;
+        for (Map.Entry<String, Integer> entry : act.processedDays.entrySet()) {
+            if(idx != 0)
+                calendar.add(Calendar.DATE, -1);
+            else
+                calendar.add(Calendar.DATE, 0);
+
+            stepVals.add(entry.getValue());
+            dateVals.add(calendar.getTime());
             ++idx;
         }
 
-        graph.addSeries(series);
+
+        for(int i = 0; i < dateVals.size(); ++i){
+            points[i] = new DataPoint(i, stepVals.get(i));
+        }
+
+        series = new BarGraphSeries<>(points);
+        series.setColor(Color.rgb(50, 100, 70));
     }
 
 
