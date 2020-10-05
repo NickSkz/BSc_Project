@@ -27,6 +27,7 @@ public class EditUserInfoActivity extends AppCompatActivity {
         final ViewPager viewPager = findViewById(R.id.view_pager);
         UserDataPageAdapter pagerAdapter = new UserDataPageAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
         viewPager.setAdapter(pagerAdapter);
+        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
 
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
@@ -44,6 +45,8 @@ public class EditUserInfoActivity extends AppCompatActivity {
 
             }
         });
+
+        tabLayout.bringToFront();
     }
 
     @Override

@@ -38,6 +38,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Calories" />
+
+        <com.google.android.material.tabs.TabItem
+            android:id="@+id/calories_calculator_fragment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="BMR" />
     </com.google.android.material.tabs.TabLayout>
 
 

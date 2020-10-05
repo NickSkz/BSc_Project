@@ -44,10 +44,11 @@
         app:layout_constraintTop_toBottomOf="@+id/distance_view" />
 
     <com.jjoe64.graphview.GraphView
-        android:id="@+id/graph_view"
+        android:id="@+id/graphdist_view"
         android:layout_width="match_parent"
         android:layout_height="244dp"
         android:layout_marginTop="48dp"
+        android:layout_marginRight="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"

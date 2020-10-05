@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -21,6 +22,19 @@ import com.example.biosensordataanalyzer.Connection.ConnectionActivity;
 import com.example.biosensordataanalyzer.Constants.Consts;
 import com.example.biosensordataanalyzer.Main.MainActivity;
 import com.example.biosensordataanalyzer.R;
+import com.jjoe64.graphview.DefaultLabelFormatter;
+import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.GridLabelRenderer;
+import com.jjoe64.graphview.series.BarGraphSeries;
+import com.jjoe64.graphview.series.DataPoint;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+import java.util.Map;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -35,6 +49,13 @@ public class CaloriesFragment extends Fragment {
 
     public static boolean waitingForData;
     private int calories;
+
+    private BarGraphSeries<DataPoint> series;
+    private GraphView graph;
+    private GridLabelRenderer gridLabelRenderer;
+
+    ArrayList<Integer> distVals;
+    DateFormat dateFormat;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -74,6 +95,9 @@ public class CaloriesFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
+        dateFormat = new SimpleDateFormat("dd/MM", Locale.ENGLISH);
+        distVals = new ArrayList<>();
     }
 
     @Override
@@ -82,6 +106,33 @@ public class CaloriesFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_calories, container, false);
 
         caloriesView = v.findViewById(R.id.calories_view);
+
+        graph = v.findViewById(R.id.graphcal_view);
+        graph.setTitle("Last 7 days");
+        graph.setTitleColor(Color.rgb(0, 100, 0));
+
+
+        gridLabelRenderer = graph.getGridLabelRenderer();
+        gridLabelRenderer.setGridColor(Color.rgb(0, 100, 0));
+        gridLabelRenderer.setHorizontalLabelsColor(Color.rgb(0, 100, 0));
+        gridLabelRenderer.setVerticalLabelsColor(Color.rgb(0, 100, 0));
+        gridLabelRenderer.setNumHorizontalLabels(7);
+        gridLabelRenderer.setPadding(32);
+        gridLabelRenderer.setHorizontalAxisTitle("Days from Today");
+        gridLabelRenderer.setHorizontalAxisTitleColor(Color.rgb(100, 100, 200));
+        gridLabelRenderer.setVerticalAxisTitleColor(Color.rgb(100, 100, 200));
+        gridLabelRenderer.setVerticalAxisTitle("Calories");
+        gridLabelRenderer.setLabelFormatter(new DefaultLabelFormatter(){
+            @Override
+            public String formatLabel(double value, boolean isValueX) {
+                if(isValueX){
+                    return ""+(int)value;
+                }
+
+                return super.formatLabel(value, isValueX);
+            }
+        });
+
 
         Thread thr = new Thread(new Runnable() {
             @Override
@@ -117,6 +168,42 @@ public class CaloriesFragment extends Fragment {
                 Log.i(TAG, "Calories: " + caloriesView);
             }
         });
+
+        prepareGraph();
+        graph.addSeries(series);
+        graph.refreshDrawableState();
+    }
+
+
+    public void prepareGraph(){
+        TrainingActivity act = (TrainingActivity) getActivity();
+
+        Calendar calendar = Calendar.getInstance();
+        ArrayList<Date> dateVals = new ArrayList<>();
+
+        DataPoint[] points = new DataPoint[7];
+
+
+        int idx = 0;
+        for (Map.Entry<String, String> entry : act.processedDays.entrySet()) {
+            if(idx != 0)
+                calendar.add(Calendar.DATE, -1);
+            else
+                calendar.add(Calendar.DATE, 0);
+
+            String[] data = entry.getValue().split(";");
+            distVals.add(Integer.parseInt(data[2]));
+            dateVals.add(calendar.getTime());
+            ++idx;
+        }
+
+
+        for(int i = 0; i < dateVals.size(); ++i){
+            points[i] = new DataPoint(i, distVals.get(i));
+        }
+
+        series = new BarGraphSeries<>(points);
+        series.setColor(Color.rgb(50, 100, 70));
     }
 
 }

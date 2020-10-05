@@ -57,7 +57,8 @@ public class DistanceFragment extends Fragment {
     private GraphView graph;
     private GridLabelRenderer gridLabelRenderer;
 
-    ArrayList<Integer> stepVals;
+    ArrayList<Integer> distVals;
+    DateFormat dateFormat;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -99,11 +100,8 @@ public class DistanceFragment extends Fragment {
         }
 
         dateFormat = new SimpleDateFormat("dd/MM", Locale.ENGLISH);
-        stepVals = new ArrayList<>();
+        distVals = new ArrayList<>();
     }
-
-    //RESET PO 24
-    DateFormat dateFormat;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -112,7 +110,7 @@ public class DistanceFragment extends Fragment {
 
         distanceView = v.findViewById(R.id.distance_view);
 
-        graph = v.findViewById(R.id.graph_view);
+        graph = v.findViewById(R.id.graphdist_view);
         graph.setTitle("Last 7 days");
         graph.setTitleColor(Color.rgb(0, 100, 0));
 
@@ -188,20 +186,21 @@ public class DistanceFragment extends Fragment {
 
 
         int idx = 0;
-        for (Map.Entry<String, Integer> entry : act.processedDays.entrySet()) {
+        for (Map.Entry<String, String> entry : act.processedDays.entrySet()) {
             if(idx != 0)
                 calendar.add(Calendar.DATE, -1);
             else
                 calendar.add(Calendar.DATE, 0);
 
-            stepVals.add(entry.getValue());
+            String[] data = entry.getValue().split(";");
+            distVals.add(Integer.parseInt(data[1]));
             dateVals.add(calendar.getTime());
             ++idx;
         }
 
 
         for(int i = 0; i < dateVals.size(); ++i){
-            points[i] = new DataPoint(i, stepVals.get(i));
+            points[i] = new DataPoint(i, distVals.get(i));
         }
 
         series = new BarGraphSeries<>(points);

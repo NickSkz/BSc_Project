@@ -25,8 +25,14 @@ import com.example.biosensordataanalyzer.Connection.ConnectionActivity;
 import com.example.biosensordataanalyzer.Constants.Consts;
 import com.example.biosensordataanalyzer.Main.MainActivity;
 import com.example.biosensordataanalyzer.R;
+import com.jjoe64.graphview.DefaultLabelFormatter;
+import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.GridLabelRenderer;
+import com.jjoe64.graphview.series.DataPoint;
+import com.jjoe64.graphview.series.LineGraphSeries;
 
 import java.lang.reflect.Array;
+import java.security.interfaces.DSAKey;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -59,6 +65,10 @@ public class PulseActivity extends AppCompatActivity {
     private boolean pulseMeasurement;
 
     private HashMap<String, ArrayList<String>> normsTableMale, normsTableFemale;
+
+    private GraphView graph;
+    private GridLabelRenderer gridLabelRenderer;
+    private LineGraphSeries<DataPoint> series;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,8 +114,33 @@ public class PulseActivity extends AppCompatActivity {
         });
 
 
+        series = new LineGraphSeries<>();
+        graph = findViewById(R.id.pulse_graph);
+        graph.addSeries(series);
+
+        graph.setTitle("Live pulse measure");
+        graph.setTitleColor(Color.rgb(0, 100, 0));
 
 
+        gridLabelRenderer = graph.getGridLabelRenderer();
+        gridLabelRenderer.setGridColor(Color.rgb(0, 100, 0));
+        gridLabelRenderer.setHorizontalLabelsColor(Color.rgb(0, 100, 0));
+        gridLabelRenderer.setVerticalLabelsColor(Color.rgb(0, 100, 0));
+        gridLabelRenderer.setPadding(32);
+        gridLabelRenderer.setHorizontalAxisTitle("Probes");
+        gridLabelRenderer.setHorizontalAxisTitleColor(Color.rgb(100, 100, 200));
+        gridLabelRenderer.setVerticalAxisTitleColor(Color.rgb(100, 100, 200));
+        gridLabelRenderer.setVerticalAxisTitle("BPM");
+        gridLabelRenderer.setLabelFormatter(new DefaultLabelFormatter(){
+            @Override
+            public String formatLabel(double value, boolean isValueX) {
+                if(isValueX){
+                    return ""+(int)value;
+                }
+
+                return super.formatLabel(value, isValueX);
+            }
+        });
     }
 
     @Override
@@ -135,6 +170,10 @@ public class PulseActivity extends AppCompatActivity {
             pulseSum = 0;
             oxygenSum = 0;
             counter = 0;
+
+            series = new LineGraphSeries<>();
+            graph.removeAllSeries();
+            graph.addSeries(series);
 
             pulseMeasurement = true;
             readyMeasureText.setText("Measure in progress...");
@@ -167,9 +206,6 @@ public class PulseActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "Measure finished!", Toast.LENGTH_LONG).show();
                 showPopUp();
             });
-
-            ConnectionActivity.isMeasuring = false;
-            pulseMeasurement = false;
         }
     }
 
@@ -186,10 +222,13 @@ public class PulseActivity extends AppCompatActivity {
             oxygen = intent.getIntExtra(Consts.OXYGEN,-1);
 
             // If we get measurements != 0 and measurement is on, calculate current average and print current text
-            if(ConnectionActivity.isMeasuring && pulse != 0 && oxygen != 0){
+            if(ConnectionActivity.isMeasuring && pulse != 0 && oxygen != 0) {
                 pulseSum += pulse;
                 oxygenSum += oxygen;
                 counter += 1;
+
+                series.appendData(new DataPoint(counter, pulse), true, 100);
+                graph.addSeries(series);
 
                 pulseText.setText(String.valueOf(pulse) + " BPM");
                 oxygenText.setText(String.valueOf(oxygen) + "%");
@@ -198,17 +237,11 @@ public class PulseActivity extends AppCompatActivity {
                 Log.i(TAG, "Oxygen Finale: " + String.valueOf(oxygenSum / counter));
 
                 // If the measurement is still going, send ack signal for next data (write characteristic)
-                if(pulseMeasurement) {
+                if (pulseMeasurement) {
                     BluetoothGattCharacteristic writeChar = BluetoothAPIUtils.bluetoothGatt.getService(Consts.THE_SERVICE).getCharacteristic(Consts.THE_WRITE_CHAR);
                     writeChar.setValue(Consts.ackLiveDataStream);
                     BluetoothAPIUtils.bluetoothGatt.writeCharacteristic(writeChar);
                 }
-            }
-            // If the measure is over print average measurement on the screen
-            if(!ConnectionActivity.isMeasuring && counter != 0){
-                pulseText.setText(String.valueOf(pulseSum / counter) + " BPM");
-                oxygenText.setText(String.valueOf(oxygenSum / counter) + "%");
-                readyMeasureText.setText("Ready for measure!");
             }
 
             Log.i(TAG, "Pulse: " + String.valueOf(pulse));
@@ -222,6 +255,14 @@ public class PulseActivity extends AppCompatActivity {
     private TextView popUpPul, popUpOxy, popUpPSText, popUpPulseNorm;
 
     private void showPopUp(){
+
+        ConnectionActivity.isMeasuring = false;
+        pulseMeasurement = false;
+
+        pulseText.setText(String.valueOf(pulseSum / counter) + " BPM");
+        oxygenText.setText(String.valueOf(oxygenSum / counter) + "%");
+        readyMeasureText.setText("Ready for measure!");
+
         LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
 
         try {
@@ -260,7 +301,6 @@ public class PulseActivity extends AppCompatActivity {
     private String checkPulseNorms(){
 
         int pulse = pulseSum / counter;
-        int oxygen = oxygenSum / counter;
 
         ArrayList<String> communicateTable = new ArrayList<>(Arrays.asList("athlete", "excellent", "good", "above average", "average", "below average", "poor"));
 

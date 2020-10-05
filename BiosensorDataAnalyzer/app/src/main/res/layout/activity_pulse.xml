@@ -116,12 +116,23 @@
         android:id="@+id/ready_pulse_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="76dp"
+        android:layout_marginTop="192dp"
         android:text="Ready for measure!"
         android:textColor="#DD362A"
-        android:textSize="28sp"
+        android:textSize="16dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.478"
+        app:layout_constraintHorizontal_bias="0.502"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/oxygen_view" />
+
+    <com.jjoe64.graphview.GraphView
+        android:id="@+id/pulse_graph"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:layout_marginTop="28dp"
+        android:layout_marginRight="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/oxygen_view" />
 

@@ -26,6 +26,11 @@ import com.example.biosensordataanalyzer.Connection.ConnectionActivity;
 import com.example.biosensordataanalyzer.Constants.Consts;
 import com.example.biosensordataanalyzer.Main.MainActivity;
 import com.example.biosensordataanalyzer.R;
+import com.jjoe64.graphview.DefaultLabelFormatter;
+import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.GridLabelRenderer;
+import com.jjoe64.graphview.series.DataPoint;
+import com.jjoe64.graphview.series.LineGraphSeries;
 
 import org.tensorflow.lite.Interpreter;
 
@@ -63,6 +68,10 @@ public class PressureActivity extends AppCompatActivity {
     Interpreter interpreter;
     ByteBuffer tfLiteBuffer;
 
+    private GraphView graph;
+    private GridLabelRenderer gridLabelRenderer;
+    private LineGraphSeries<DataPoint> sysSeries, diaSeries;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,6 +96,38 @@ public class PressureActivity extends AppCompatActivity {
         stopMeasureButton.setOnClickListener(view -> {
             stopMeasurement();
         });
+
+
+        sysSeries = new LineGraphSeries<>();
+        diaSeries = new LineGraphSeries<>();
+        graph = findViewById(R.id.pressure_graph);
+        graph.addSeries(sysSeries);
+        graph.addSeries(diaSeries);
+
+        graph.setTitle("Live pressure measure");
+        graph.setTitleColor(Color.rgb(0, 100, 0));
+
+
+        gridLabelRenderer = graph.getGridLabelRenderer();
+        gridLabelRenderer.setGridColor(Color.rgb(0, 100, 0));
+        gridLabelRenderer.setHorizontalLabelsColor(Color.rgb(0, 100, 0));
+        gridLabelRenderer.setVerticalLabelsColor(Color.rgb(0, 100, 0));
+        gridLabelRenderer.setPadding(32);
+        gridLabelRenderer.setHorizontalAxisTitle("Probes");
+        gridLabelRenderer.setHorizontalAxisTitleColor(Color.rgb(100, 100, 200));
+        gridLabelRenderer.setVerticalAxisTitleColor(Color.rgb(100, 100, 200));
+        gridLabelRenderer.setVerticalAxisTitle("mmHg");
+        gridLabelRenderer.setLabelFormatter(new DefaultLabelFormatter(){
+            @Override
+            public String formatLabel(double value, boolean isValueX) {
+                if(isValueX){
+                    return ""+(int)value;
+                }
+
+                return super.formatLabel(value, isValueX);
+            }
+        });
+
 
         // Prepare array according to user's profile data
         MainActivity.currentUser.prepareNeuralPressureArray();
@@ -123,6 +164,14 @@ public class PressureActivity extends AppCompatActivity {
             diastolicSum = 0;
             counter = 0;
 
+            sysSeries = new LineGraphSeries<>();
+            sysSeries.setColor(Color.rgb(0, 0, 255));
+            diaSeries = new LineGraphSeries<>();
+            diaSeries.setColor(Color.rgb(0, 255, 0));
+            graph.removeAllSeries();
+            graph.addSeries(sysSeries);
+            graph.addSeries(diaSeries);
+
             pressureMeasurement = true;
             readyMeasureText.setText("Measure in progress...");
 
@@ -158,8 +207,6 @@ public class PressureActivity extends AppCompatActivity {
                 showPopUp();
             });
 
-            ConnectionActivity.isMeasuring = false;
-            pressureMeasurement = false;
         }
     }
 
@@ -181,6 +228,11 @@ public class PressureActivity extends AppCompatActivity {
                 diastolicSum += diastolic;
                 counter += 1;
 
+                sysSeries.appendData(new DataPoint(counter, systolic), true, 100);
+                diaSeries.appendData(new DataPoint(counter, diastolic), true, 100);
+                graph.addSeries(sysSeries);
+                graph.addSeries(diaSeries);
+
                 systolicText.setText(String.valueOf(systolic) + " mmHg");
                 diastolicText.setText(String.valueOf(diastolic) + " mmHg");
 
@@ -196,12 +248,6 @@ public class PressureActivity extends AppCompatActivity {
                     writeChar.setValue(Consts.ackLiveDataStream);
                     BluetoothAPIUtils.bluetoothGatt.writeCharacteristic(writeChar);
                 }
-            }
-            // If the measure is over print average measurement on the screen
-            if(!ConnectionActivity.isMeasuring && counter != 0){
-                systolicText.setText(String.valueOf(systolicSum / counter) + " mmHg");
-                diastolicText.setText(String.valueOf(diastolicSum / counter) + " mmHg");
-                readyMeasureText.setText("Ready for measure!");
             }
 
             Log.i(TAG, "Systolic: " + String.valueOf(systolic));
@@ -231,6 +277,14 @@ public class PressureActivity extends AppCompatActivity {
     private TextView popUpSys, popUpDia, popUpHDText, popUpPressureNorm;
 
     private void showPopUp(){
+
+        ConnectionActivity.isMeasuring = false;
+        pressureMeasurement = false;
+
+        systolicText.setText(String.valueOf(systolicSum / counter) + " mmHg");
+        diastolicText.setText(String.valueOf(diastolicSum / counter) + " mmHg");
+        readyMeasureText.setText("Ready for measure!");
+
         LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
 
         try {

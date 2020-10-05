@@ -28,10 +28,14 @@ public class TrainingPageAdapter  extends FragmentPagerAdapter {
                 return new DistanceFragment();
             case 2:
                 return new CaloriesFragment();
+            case 3:
+                return new CaloriesCalculatorFragment();
             default:
                 return null;
         }
     }
+
+
 
     @Override
     public int getCount() {
@@ -40,7 +44,19 @@ public class TrainingPageAdapter  extends FragmentPagerAdapter {
 
     @Nullable
     @Override
-    public CharSequence getPageTitle(int position) {
-        return super.getPageTitle(position);
+    public CharSequence getPageTitle(int position)
+    {
+        switch (position){
+            case 0:
+                return "STEPS";
+            case 1:
+                return "DISTANCE";
+            case 2:
+                return "CALORIES";
+            case 3:
+                return "BMR";
+            default:
+                return null;
+        }
     }
 }

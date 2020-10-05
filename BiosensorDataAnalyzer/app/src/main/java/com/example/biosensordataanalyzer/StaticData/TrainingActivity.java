@@ -53,8 +53,8 @@ public class TrainingActivity extends AppCompatActivity {
     public static boolean waitingForData;
     public static CountDownLatch waitForDataLatch;
 
-    Map<String, Integer> processedDays;
-    Map<String, Integer> realDays;
+    Map<String, String> processedDays;
+    Map<String, String> realDays;
 
     int steps, distance, calories;
 
@@ -79,11 +79,13 @@ public class TrainingActivity extends AppCompatActivity {
         final ViewPager viewPager = findViewById(R.id.view_trainpager);
         TrainingPageAdapter pagerAdapter = new TrainingPageAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
         viewPager.setAdapter(pagerAdapter);
+        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
 
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 viewPager.setCurrentItem(tab.getPosition());
+                tabLayout.getTabAt(tab.getPosition()).select();
             }
 
             @Override
@@ -96,6 +98,8 @@ public class TrainingActivity extends AppCompatActivity {
 
             }
         });
+
+        tabLayout.bringToFront();
 
         requestSteps();
 
@@ -129,7 +133,9 @@ public class TrainingActivity extends AppCompatActivity {
         BluetoothAPIUtils.bluetoothGatt.writeCharacteristic(writeChar);
     }
 
-    private void prepareDays(int steps){
+    // 147 steps, 102 meters, 4414 cal
+    // 158 steps, 110 meters, 4744 cal
+    private void prepareDays(int putSteps, int putDistance, int putCalories){
         processedDays.clear();
 
         Calendar calendar = Calendar.getInstance();
@@ -137,19 +143,19 @@ public class TrainingActivity extends AppCompatActivity {
 
 
         calendar.add(Calendar.DATE, 0);
-        processedDays.put(dateFormat.format(calendar.getTime()), steps);
+        processedDays.put(dateFormat.format(calendar.getTime()), putSteps + ";" + putDistance + ";" + putCalories);
         calendar.add(Calendar.DATE, -1);
-        processedDays.put(dateFormat.format(calendar.getTime()), 0);
+        processedDays.put(dateFormat.format(calendar.getTime()), 0 + ";" + 0 + ";" + 0);
         calendar.add(Calendar.DATE, -1);
-        processedDays.put(dateFormat.format(calendar.getTime()), 0);
+        processedDays.put(dateFormat.format(calendar.getTime()), 0 + ";" + 0 + ";" + 0);
         calendar.add(Calendar.DATE, -1);
-        processedDays.put(dateFormat.format(calendar.getTime()), 0);
+        processedDays.put(dateFormat.format(calendar.getTime()), 0 + ";" + 0 + ";" + 0);
         calendar.add(Calendar.DATE, -1);
-        processedDays.put(dateFormat.format(calendar.getTime()), 0);
+        processedDays.put(dateFormat.format(calendar.getTime()), 0 + ";" + 0 + ";" + 0);
         calendar.add(Calendar.DATE, -1);
-        processedDays.put(dateFormat.format(calendar.getTime()), 0);
+        processedDays.put(dateFormat.format(calendar.getTime()), 0 + ";" + 0 + ";" + 0);
         calendar.add(Calendar.DATE, -1);
-        processedDays.put(dateFormat.format(calendar.getTime()), 0);
+        processedDays.put(dateFormat.format(calendar.getTime()), 0 + ";" + 0 + ";" + 0);
 
     }
 
@@ -172,16 +178,10 @@ public class TrainingActivity extends AppCompatActivity {
         fileInputStream.close();
     }
 
-    private BarGraphSeries<DataPoint> series;
-    private GraphView graph;
-    private GridLabelRenderer gridLabelRenderer;
-
-    ArrayList<Integer> stepVals;
-
 
     private void transferData() throws IOException {
 
-        prepareDays(0);
+        prepareDays(0, 0, 0);
 
         realDays.clear();
 
@@ -191,20 +191,20 @@ public class TrainingActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        for (Map.Entry<String, Integer> entry : realDays.entrySet()){
-            Log.i(TAG, entry.getKey() + " : " + String.valueOf(entry.getValue()));
-        }
 
-
-        for (Map.Entry<String, Integer> entry : processedDays.entrySet()){
+        for (Map.Entry<String, String> entry : processedDays.entrySet()){
             if(realDays.containsKey(entry.getKey())){
-                processedDays.put(entry.getKey(), entry.getValue() + realDays.get(entry.getKey()));
+                String[] oldVals = entry.getValue().split(";");
+                String[] readVals = realDays.get(entry.getKey()).split(";");
+                int[] newVals = {
+                        Integer.parseInt(oldVals[0]) + Integer.parseInt(readVals[0]),
+                        Integer.parseInt(oldVals[1]) + Integer.parseInt(readVals[1]),
+                        Integer.parseInt(oldVals[2]) + Integer.parseInt(readVals[2])
+                };
+                processedDays.put(entry.getKey(), newVals[0] + ";" + newVals[1] + ";" + newVals[2]);
             }
         }
 
-        for (Map.Entry<String, Integer> entry : processedDays.entrySet()){
-            Log.i(TAG, entry.getKey() + " : " + String.valueOf(entry.getValue()));
-        }
 
         save(getApplicationContext());
     }
@@ -243,7 +243,7 @@ public class TrainingActivity extends AppCompatActivity {
             distance = intent.getIntExtra(Consts.DISTANCE,-1);
             calories = intent.getIntExtra(Consts.CALORIES,-1);
 
-            prepareDays(distance);
+            prepareDays(steps, distance, calories);
 
             waitingForData = false;
             waitForDataLatch.countDown();

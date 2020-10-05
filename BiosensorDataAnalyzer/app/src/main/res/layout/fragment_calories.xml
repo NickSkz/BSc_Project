@@ -10,10 +10,10 @@
         android:id="@+id/textView99"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="175dp"
-        android:text="You've already done"
+        android:layout_marginTop="80dp"
+        android:text="Today, you've already done"
         android:textColor="#A4C389"
-        android:textSize="24sp"
+        android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -22,9 +22,9 @@
         android:id="@+id/calories_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="36dp"
+        android:layout_marginTop="24dp"
         android:textColor="#A4C389"
-        android:textSize="48sp"
+        android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView99" />
@@ -33,12 +33,23 @@
         android:id="@+id/textView111"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="44dp"
+        android:layout_marginTop="28dp"
         android:text="calories, go on baby!"
         android:textColor="#A4C389"
-        android:textSize="24sp"
+        android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/calories_view" />
+
+    <com.jjoe64.graphview.GraphView
+        android:id="@+id/graphcal_view"
+        android:layout_width="match_parent"
+        android:layout_height="244dp"
+        android:layout_marginTop="48dp"
+        android:layout_marginRight="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView111" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

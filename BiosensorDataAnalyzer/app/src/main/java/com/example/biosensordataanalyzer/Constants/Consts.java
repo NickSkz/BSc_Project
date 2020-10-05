@@ -41,5 +41,5 @@ public class Consts {
 
     // Name of text file where we store all user's data
     static final public String userFileName = "currentUser.txt";
-    static final public String lastDaysFileName = "lastSevenDays.txt";
+    static final public String lastDaysFileName = "sevenDays.txt";
 }
