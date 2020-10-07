@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="#E3CCCC">
+    android:background="@drawable/reverse_dark_triangles">
 
     <TextView
         android:id="@+id/textView222"
@@ -23,23 +24,12 @@
         android:layout_width="243dp"
         android:layout_height="42dp"
         android:layout_marginTop="20dp"
+        android:textColor="#1A6039"
         android:text="Your pulse is above average"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView222" />
-
-    <TextView
-        android:id="@+id/pop_ps_text"
-        android:layout_width="243dp"
-        android:layout_height="46dp"
-        android:layout_marginTop="16dp"
-        android:text="There is 00.00% chance of you having a heart disease"
-        android:textSize="18sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.507"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/pulse_norm_check" />
 
     <TextView
         android:id="@+id/textView226"
@@ -60,6 +50,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
         android:text="Pulse:"
+        android:textColor="#1A6039"
         android:textSize="24sp"
         app:layout_constraintEnd_toStartOf="@+id/pop_pul_view"
         app:layout_constraintHorizontal_bias="0.27"
@@ -71,6 +62,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="48dp"
+        android:textColor="#1A6039"
         android:text="Oxygen:"
         android:textSize="24sp"
         app:layout_constraintEnd_toStartOf="@+id/pop_oxy_view"
@@ -83,7 +75,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
-        android:textColor="#E13E3E"
+        android:textColor="#0A95B1"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.8"
@@ -95,7 +87,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="48dp"
-        android:textColor="#E13E3E"
+        android:textColor="#0A95B1"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.8"
@@ -106,13 +98,14 @@
         android:id="@+id/textView331"
         android:layout_width="250dp"
         android:layout_height="48dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="20dp"
         android:text="Please, visit a specialist in order to find out more"
         android:textSize="18sp"
+        android:textColor="#1A6039"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.507"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/pop_ps_text" />
+        app:layout_constraintTop_toBottomOf="@+id/pulse_norm_check" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -60,6 +60,8 @@ public class TrainingActivity extends AppCompatActivity {
 
     Button refreshBtn;
 
+    DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd", Locale.ENGLISH);
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -139,8 +141,6 @@ public class TrainingActivity extends AppCompatActivity {
         processedDays.clear();
 
         Calendar calendar = Calendar.getInstance();
-        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd", Locale.ENGLISH);
-
 
         calendar.add(Calendar.DATE, 0);
         processedDays.put(dateFormat.format(calendar.getTime()), putSteps + ";" + putDistance + ";" + putCalories);
@@ -191,6 +191,10 @@ public class TrainingActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
+        for (Map.Entry<String, String> entry : realDays.entrySet()){
+            Log.i(TAG, entry.getKey() + " : " + entry.getValue());
+        }
+
 
         for (Map.Entry<String, String> entry : processedDays.entrySet()){
             if(realDays.containsKey(entry.getKey())){
@@ -204,7 +208,11 @@ public class TrainingActivity extends AppCompatActivity {
                 processedDays.put(entry.getKey(), newVals[0] + ";" + newVals[1] + ";" + newVals[2]);
             }
         }
+        
 
+        for (Map.Entry<String, String> entry : processedDays.entrySet()){
+            Log.i(TAG, entry.getKey() + " : " + entry.getValue());
+        }
 
         save(getApplicationContext());
     }
@@ -243,7 +251,10 @@ public class TrainingActivity extends AppCompatActivity {
             distance = intent.getIntExtra(Consts.DISTANCE,-1);
             calories = intent.getIntExtra(Consts.CALORIES,-1);
 
-            prepareDays(steps, distance, calories);
+            Calendar calendar = Calendar.getInstance();
+
+            calendar.add(Calendar.DATE, 0);
+            processedDays.put(dateFormat.format(calendar.getTime()), steps + ";" + distance + ";" + calories);
 
             waitingForData = false;
             waitForDataLatch.countDown();

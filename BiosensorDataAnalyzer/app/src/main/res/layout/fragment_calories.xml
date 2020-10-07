@@ -34,7 +34,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="28dp"
-        android:text="calories, go on baby!"
+        android:text="calories, go on!"
         android:textColor="#A4C389"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/dark_triangles"
-    tools:context=".MeasurmentsActivities.PulseActivity">
+    tools:context=".MeasureActivities.PulseActivity">
 
     <include
         android:id="@+id/include3"
@@ -103,7 +103,7 @@
             android:id="@+id/start_measurement_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Start Measurement" />
+            android:text="Start Measure" />
 
         <Button
             android:id="@+id/stop_measurement_btn"

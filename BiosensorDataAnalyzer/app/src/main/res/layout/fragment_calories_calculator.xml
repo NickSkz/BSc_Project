@@ -125,7 +125,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="48dp"
-        android:text="Calories burn during 1 hour of:"
+        android:text="Calories burned during 1 hour of:"
         android:textColor="#A4C389"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -139,9 +139,9 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
-        android:text="Jogging:"
+        android:text="Jogging (9.6km/h):"
         android:textColor="#A4C389"
-        app:layout_constraintEnd_toStartOf="@+id/textView52"
+        app:layout_constraintEnd_toStartOf="@+id/jogging_tview"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView46" />
@@ -152,9 +152,9 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
-        android:text="Cycling"
+        android:text="Cycling (20km/h):"
         android:textColor="#A4C389"
-        app:layout_constraintEnd_toStartOf="@+id/textView54"
+        app:layout_constraintEnd_toStartOf="@+id/cycling_tview"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView48" />
@@ -165,9 +165,9 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:text="Walking"
+        android:text="Walking (4.8km/h):"
         android:textColor="#A4C389"
-        app:layout_constraintEnd_toStartOf="@+id/textView51"
+        app:layout_constraintEnd_toStartOf="@+id/walking_tview"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView26" />
@@ -178,51 +178,55 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
-        android:text="Running Intervals:"
+        android:text="Fast Running (12.9km/h):"
         android:textColor="#A4C389"
-        app:layout_constraintEnd_toStartOf="@+id/textView53"
+        app:layout_constraintEnd_toStartOf="@+id/frunn_tview"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView27" />
 
     <TextView
-        android:id="@+id/textView51"
-        android:layout_width="70dp"
+        android:id="@+id/walking_tview"
+        android:layout_width="140dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:textColor="#0A95B1"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.863"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView26" />
 
     <TextView
-        android:id="@+id/textView52"
-        android:layout_width="70dp"
+        android:id="@+id/jogging_tview"
+        android:layout_width="140dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:textColor="#0A95B1"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.863"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView51" />
+        app:layout_constraintTop_toBottomOf="@+id/walking_tview" />
 
     <TextView
-        android:id="@+id/textView53"
-        android:layout_width="70dp"
+        android:id="@+id/frunn_tview"
+        android:layout_width="140dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:textColor="#0A95B1"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.863"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView52" />
+        app:layout_constraintTop_toBottomOf="@+id/jogging_tview" />
 
     <TextView
-        android:id="@+id/textView54"
-        android:layout_width="70dp"
+        android:id="@+id/cycling_tview"
+        android:layout_width="140dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:textColor="#0A95B1"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.863"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView53" />
+        app:layout_constraintTop_toBottomOf="@+id/frunn_tview" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

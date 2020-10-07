@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="#E3CCCC">
+    android:background="@drawable/reverse_dark_triangles">
 
 
     <TextView
@@ -25,6 +25,7 @@
         android:layout_width="243dp"
         android:layout_height="42dp"
         android:layout_marginTop="20dp"
+        android:textColor="#1A6039"
         android:text="Your blood pressure is elevated"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -36,6 +37,7 @@
         android:layout_width="243dp"
         android:layout_height="46dp"
         android:layout_marginTop="16dp"
+        android:textColor="#1A6039"
         android:text="There is 00.00% chance of you having a heart disease"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -61,6 +63,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
+        android:textColor="#1A6039"
         android:text="Systolic:"
         android:textSize="24sp"
         app:layout_constraintEnd_toStartOf="@+id/pop_pul_view"
@@ -73,6 +76,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="48dp"
+        android:textColor="#1A6039"
         android:text="Diastolic:"
         android:textSize="24sp"
         app:layout_constraintEnd_toStartOf="@+id/pop_oxy_view"
@@ -85,7 +89,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
-        android:textColor="#E13E3E"
+        android:textColor="#0A95B1"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.8"
@@ -97,7 +101,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="48dp"
-        android:textColor="#E13E3E"
+        android:textColor="#0A95B1"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.8"
@@ -109,6 +113,7 @@
         android:layout_width="250dp"
         android:layout_height="48dp"
         android:layout_marginTop="16dp"
+        android:textColor="#1A6039"
         android:text="Please, visit a specialist in order to find out more"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"

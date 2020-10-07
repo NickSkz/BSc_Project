@@ -18,8 +18,8 @@ import com.example.biosensordataanalyzer.Bluetooth.BluetoothAPIUtils;
 import com.example.biosensordataanalyzer.Connection.ConnectionActivity;
 import com.example.biosensordataanalyzer.StaticData.TrainingActivity;
 import com.example.biosensordataanalyzer.User.CurrentUser;
-import com.example.biosensordataanalyzer.MeasurmentsActivities.PressureActivity;
-import com.example.biosensordataanalyzer.MeasurmentsActivities.PulseActivity;
+import com.example.biosensordataanalyzer.MeasureActivities.PressureActivity;
+import com.example.biosensordataanalyzer.MeasureActivities.PulseActivity;
 import com.example.biosensordataanalyzer.R;
 import com.example.biosensordataanalyzer.User.EditUserInfoActivity;
 

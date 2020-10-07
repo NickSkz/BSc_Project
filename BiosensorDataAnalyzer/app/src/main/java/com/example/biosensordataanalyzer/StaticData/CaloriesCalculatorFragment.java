@@ -1,5 +1,6 @@
 package com.example.biosensordataanalyzer.StaticData;
 
+import android.content.res.AssetFileDescriptor;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -16,6 +17,12 @@ import android.widget.TextView;
 import com.example.biosensordataanalyzer.Main.MainActivity;
 import com.example.biosensordataanalyzer.R;
 
+import org.tensorflow.lite.Interpreter;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,6 +43,13 @@ public class CaloriesCalculatorFragment extends Fragment {
     private int caloriesMaintenance;
 
     private TextView bmrView, lossView, maintenanceView;
+
+    private TextView walkingView, joggingView, fastRunView, cyclingView;
+
+    // Interpreter/ByteBuffer for running tha network
+    Interpreter interpreter;
+    ByteBuffer tfLiteBuffer;
+
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -77,6 +91,9 @@ public class CaloriesCalculatorFragment extends Fragment {
         }
 
         castSpinnerMap = new HashMap<>();
+
+        // Initialize TfLite Interpreter
+        initializeTfLite();
     }
 
     @Override
@@ -89,6 +106,39 @@ public class CaloriesCalculatorFragment extends Fragment {
         bmrView = v.findViewById(R.id.bmr_text_view);
         lossView = v.findViewById(R.id.wghloss_text_view);
         maintenanceView = v.findViewById(R.id.wghmain_text_view );
+
+
+        walkingView = v.findViewById(R.id.walking_tview);
+        joggingView = v.findViewById(R.id.jogging_tview);
+        fastRunView = v.findViewById(R.id.frunn_tview);
+        cyclingView = v.findViewById(R.id.cycling_tview);
+
+
+        //WALK 3mph
+        float[][] inpWalkArr = {{3, (float)(MainActivity.currentUser.weight / 0.45359237)}};
+        float[][] walkArr = {{0.0f}};
+
+        //RUN 6mph
+        float[][] inpJogArr = {{1, (float)(MainActivity.currentUser.weight / 0.45359237)}};
+        float[][] jogArr = {{0.0f}};
+
+        //RUN 8mph
+        float[][] inpRunArr = {{2, (float)(MainActivity.currentUser.weight / 0.45359237)}};
+        float[][] runArr = {{0.0f}};
+
+        //CYCLING 12-13mph
+        float[][] inpCyclArr = {{0, (float)(MainActivity.currentUser.weight / 0.45359237)}};
+        float[][] cyclArr = {{0.0f}};
+
+        interpreter.run(inpWalkArr, walkArr);
+        interpreter.run(inpJogArr, jogArr);
+        interpreter.run(inpRunArr, runArr);
+        interpreter.run(inpCyclArr, cyclArr);
+
+        walkingView.setText(String.format("%.1f", walkArr[0][0]) + " kcal");
+        joggingView.setText(String.format("%.1f", jogArr[0][0]) + " kcal");
+        fastRunView.setText(String.format("%.1f", runArr[0][0]) + " kcal");
+        cyclingView.setText(String.format("%.1f", cyclArr[0][0]) + " kcal");
 
 
 
@@ -135,8 +185,27 @@ public class CaloriesCalculatorFragment extends Fragment {
 
     private void setViews(){
         bmrView.setText(String.valueOf(bmr));
-        lossView.setText(String.valueOf(caloriesLoss) + " kCal");
-        maintenanceView.setText(String.valueOf(caloriesMaintenance) + " kCal");
+        lossView.setText(String.valueOf(caloriesLoss) + " kcal");
+        maintenanceView.setText(String.valueOf(caloriesMaintenance) + " kcal");
     }
+
+
+    private void initializeTfLite(){
+        try{
+            AssetFileDescriptor assetFileDescriptor = getActivity().getAssets().openFd("calories_model.tflite");
+            long startOff = assetFileDescriptor.getStartOffset();
+            long length = assetFileDescriptor.getDeclaredLength();
+
+            FileInputStream fileInputStream = new FileInputStream(assetFileDescriptor.getFileDescriptor());
+            FileChannel fileChannel = fileInputStream.getChannel();
+            tfLiteBuffer = fileChannel.map(FileChannel.MapMode.READ_ONLY, startOff, length);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        interpreter = new Interpreter(tfLiteBuffer);
+    }
+
 
 }

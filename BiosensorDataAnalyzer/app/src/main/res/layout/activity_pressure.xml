@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/dark_triangles"
-    tools:context=".MeasurmentsActivities.PressureActivity">
+    tools:context=".MeasureActivities.PressureActivity">
 
 
 
@@ -106,7 +106,7 @@
             android:id="@+id/start_pressure_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Start Measurement" />
+            android:text="Start Measure" />
 
         <Button
             android:id="@+id/stop_pressure_btn"
