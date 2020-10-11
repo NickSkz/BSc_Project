@@ -285,7 +285,6 @@ public class ConnectionActivity extends AppCompatActivity {
     private void calibrateBand() throws InterruptedException {
         if(ConnectionService.readyForCommands && !waitingForBattery) {
 
-
             StringBuffer dateTimeBits = new StringBuffer();
 
             Calendar calendar = Calendar.getInstance();
@@ -321,7 +320,7 @@ public class ConnectionActivity extends AppCompatActivity {
 
             byte[] tempArr = new byte[9];
             System.arraycopy(Consts.calibrateBand, 8, tempArr, 0, 9);
-            prepareAccordingToDecompiler(tempArr, false, false, 0, 8);
+            prepareMessage(tempArr);
 
             Log.i(TAG, String.valueOf(passedValue));
             Log.i(TAG, Arrays.toString(Consts.calibrateBand));
@@ -346,32 +345,28 @@ public class ConnectionActivity extends AppCompatActivity {
     }
 
 
-    /*
-     * METHOD BASED ON DECOMPILED .apk, variable names slightly changed according to JADX decompiler (to see raw decompiled
-     * functions go to decompilation folder in project's main directory)
-     */
-    private static void prepareAccordingToDecompiler(byte[] bArr, boolean z, boolean z2, int i, int i2) {
-        int i3;
-        int i4;
+    private static void prepareMessage(byte[] bArr) {
+        int buffOne;
+        int buffTwo;
         if (bArr != null) {
-            i4 = bArr.length;
-            i3 = 0;
-            for (int idx = 0; idx < i4; ++idx) {
-                i3 = (i3 >> 8) ^ Consts.crc16_table[(bArr[idx] ^ i3) & 255];
+            buffTwo = bArr.length;
+            buffOne = 0;
+            for (int idx = 0; idx < buffTwo; ++idx) {
+                buffOne = (buffOne >> 8) ^ Consts.crc16_table[(bArr[idx] ^ buffOne) & 255];
             }
         } else {
-            i4 = 0;
-            i3 = 0;
+            buffTwo = 0;
+            buffOne = 0;
         }
 
         Consts.calibrateBand[0] = (byte)-85;
-        Consts.calibrateBand[1] = (byte) ((z2 ? z ? 48 : 16 : 0) | (i & 15));
-        Consts.calibrateBand[2] = (byte) ((i4 >> 8) & 255);
-        Consts.calibrateBand[3] = (byte) (i4 & 255);
-        Consts.calibrateBand[4] = (byte) ((i3 >> 8) & 255);
-        Consts.calibrateBand[5] = (byte) (i3 & 255);
-        Consts.calibrateBand[6] = (byte) ((i2 >> 8) & 255);
-        Consts.calibrateBand[7] = (byte) (i2 & 255);
+        Consts.calibrateBand[1] = (byte)0;
+        Consts.calibrateBand[2] = (byte) ((buffTwo >> 8) & 255);
+        Consts.calibrateBand[3] = (byte) (buffTwo & 255);
+        Consts.calibrateBand[4] = (byte) ((buffOne >> 8) & 255);
+        Consts.calibrateBand[5] = (byte) (buffOne & 255);
+        Consts.calibrateBand[6] = (byte) ((8 >> 8) & 255);
+        Consts.calibrateBand[7] = (byte) (8 & 255);
     }
 
 

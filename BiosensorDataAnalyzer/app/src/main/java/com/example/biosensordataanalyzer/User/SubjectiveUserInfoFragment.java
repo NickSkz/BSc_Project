@@ -40,6 +40,8 @@ public class SubjectiveUserInfoFragment extends Fragment {
     private Button saveBtn;
     private HashMap<String, Integer> castSpinnerMap;
 
+    String[] answers;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -48,10 +50,10 @@ public class SubjectiveUserInfoFragment extends Fragment {
 
         castSpinnerMap = new HashMap<>();
 
-        String[] answers = new String[]{"No", "Yes"};
+        answers = new String[]{"No", "Yes"};
         castSpinnerMap.put("No", 0);
         castSpinnerMap.put("Yes", 1);
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity().getApplicationContext(), android.R.layout.simple_spinner_dropdown_item, answers);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity().getApplicationContext(), R.layout.spinner_row, answers);
 
         cigSpinner = view.findViewById(R.id.cig_spinner);
         cigSpinner.setAdapter(adapter);
@@ -72,10 +74,15 @@ public class SubjectiveUserInfoFragment extends Fragment {
 
         saveBtn = view.findViewById(R.id.save_sub_btn);
         saveBtn.setOnClickListener(view -> {
-            MainActivity.currentUser.cigaretten = castSpinnerMap.get(cigSpinner.getSelectedItem().toString());
-            MainActivity.currentUser.alcohol = castSpinnerMap.get(alcSpinner.getSelectedItem().toString());
-            MainActivity.currentUser.sport = castSpinnerMap.get(spoSpinner.getSelectedItem().toString());
-
+            if (!cigSpinner.getSelectedItem().toString().equals("")){
+                MainActivity.currentUser.cigaretten = castSpinnerMap.get(cigSpinner.getSelectedItem().toString());
+            }
+            if (!alcSpinner.getSelectedItem().toString().equals("")) {
+                MainActivity.currentUser.alcohol = castSpinnerMap.get(alcSpinner.getSelectedItem().toString());
+            }
+            if (!spoSpinner.getSelectedItem().toString().equals("")) {
+                MainActivity.currentUser.sport = castSpinnerMap.get(spoSpinner.getSelectedItem().toString());
+            }
 
             try{
                 MainActivity.currentUser.save(getActivity().getApplicationContext());
@@ -94,9 +101,9 @@ public class SubjectiveUserInfoFragment extends Fragment {
 
 
     private void setCurrentTexts(){
-        currentCig.setText(String.valueOf(MainActivity.currentUser.cigaretten));
-        currentAlc.setText(String.valueOf(MainActivity.currentUser.alcohol));
-        currentSpo.setText(String.valueOf(MainActivity.currentUser.sport));
+        currentCig.setText(String.valueOf(answers[MainActivity.currentUser.cigaretten]));
+        currentAlc.setText(String.valueOf(answers[MainActivity.currentUser.alcohol]));
+        currentSpo.setText(String.valueOf(answers[MainActivity.currentUser.sport]));
     }
 
 

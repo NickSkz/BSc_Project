@@ -13,7 +13,7 @@
         android:layout_marginTop="16dp"
         android:textColor="#0A95B1"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.896"
+        app:layout_constraintHorizontal_bias="0.897"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/wghloss_text_view" />
 
@@ -33,12 +33,12 @@
 
     <Spinner
         android:id="@+id/activity_spinner"
-        android:layout_width="98dp"
-        android:layout_height="24dp"
+        android:layout_width="70dp"
+        android:layout_height="23dp"
         android:layout_marginTop="68dp"
         android:textColor="#A4C389"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.938"
+        app:layout_constraintHorizontal_bias="0.897"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -100,7 +100,7 @@
         android:id="@+id/textView47"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="48dp"
+        android:layout_marginTop="72dp"
         android:text="Daily calories consumption for:"
         android:textColor="#A4C389"
         android:textSize="18sp"
@@ -113,10 +113,10 @@
         android:id="@+id/wghloss_text_view"
         android:layout_width="70dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="92dp"
+        android:layout_marginTop="116dp"
         android:textColor="#0A95B1"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.896"
+        app:layout_constraintHorizontal_bias="0.897"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/bmr_text_view" />
 
@@ -124,7 +124,7 @@
         android:id="@+id/textView26"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="48dp"
+        android:layout_marginTop="72dp"
         android:text="Calories burned during 1 hour of:"
         android:textColor="#A4C389"
         android:textSize="18sp"

@@ -32,6 +32,7 @@ public class ExaminatedUserInfoFragment extends Fragment {
 
     private Button saveBtn;
     private HashMap<String, Integer> castSpinnerMap;
+    String[] answers;
 
     View view;
 
@@ -44,11 +45,11 @@ public class ExaminatedUserInfoFragment extends Fragment {
 
         castSpinnerMap = new HashMap<>();
 
-        String[] answers = new String[]{"Normal", "Above Normal", "High above normal"};
+        answers = new String[]{"Normal", "Above Normal", "High above normal"};
         castSpinnerMap.put("Normal", 1);
         castSpinnerMap.put("Above Normal", 2);
         castSpinnerMap.put("High above normal", 3);
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity().getApplicationContext(), android.R.layout.simple_spinner_dropdown_item, answers);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity().getApplicationContext(), R.layout.spinner_row, answers);
 
         choSpinner = view.findViewById(R.id.cho_spinner);
         choSpinner.setAdapter(adapter);
@@ -64,9 +65,13 @@ public class ExaminatedUserInfoFragment extends Fragment {
 
         saveBtn = view.findViewById(R.id.save_exa_btn);
         saveBtn.setOnClickListener(view -> {
-            MainActivity.currentUser.cholesterol = castSpinnerMap.get(choSpinner.getSelectedItem().toString());
-            MainActivity.currentUser.glucose = castSpinnerMap.get(gluSpinner.getSelectedItem().toString());
 
+            if (!choSpinner.getSelectedItem().toString().equals("")) {
+                MainActivity.currentUser.cholesterol = castSpinnerMap.get(choSpinner.getSelectedItem().toString());
+            }
+            if (!gluSpinner.getSelectedItem().toString().equals("")) {
+                MainActivity.currentUser.glucose = castSpinnerMap.get(gluSpinner.getSelectedItem().toString());
+            }
 
             try{
                 MainActivity.currentUser.save(getActivity().getApplicationContext());
@@ -84,9 +89,14 @@ public class ExaminatedUserInfoFragment extends Fragment {
     }
 
 
+
     private void setCurrentTexts(){
-        currentCho.setText(String.valueOf(MainActivity.currentUser.cholesterol));
-        currentGlu.setText(String.valueOf(MainActivity.currentUser.glucose));
+        if (MainActivity.currentUser.cholesterol == 0 || MainActivity.currentUser.glucose == 0) {
+            return;
+        }
+
+        currentCho.setText(String.valueOf(answers[MainActivity.currentUser.cholesterol - 1]));
+        currentGlu.setText(String.valueOf(answers[MainActivity.currentUser.glucose - 1]));
     }
 
 

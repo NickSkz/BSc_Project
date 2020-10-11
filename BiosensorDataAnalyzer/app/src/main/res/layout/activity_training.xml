@@ -56,14 +56,5 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/refresh_trainbutton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="REFRESH"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/view_trainpager" />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

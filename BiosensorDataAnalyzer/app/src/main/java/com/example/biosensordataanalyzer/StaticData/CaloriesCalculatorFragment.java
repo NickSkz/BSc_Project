@@ -154,7 +154,7 @@ public class CaloriesCalculatorFragment extends Fragment {
         castSpinnerMap.put("Moderately active (sport 3-5 days/week)", 1.55d);
         castSpinnerMap.put("Very active (sport 6-7 days/week)", 1.725d);
         castSpinnerMap.put("Extremely active (physical job or training twice a day)", 1.9d);
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity().getApplicationContext(), android.R.layout.simple_spinner_dropdown_item, answers);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity().getApplicationContext(), R.layout.spinner_row, answers);
 
         activitySpinner = v.findViewById(R.id.activity_spinner);
         activitySpinner.setAdapter(adapter);

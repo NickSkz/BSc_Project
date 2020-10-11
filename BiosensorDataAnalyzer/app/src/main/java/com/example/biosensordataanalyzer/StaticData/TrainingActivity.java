@@ -58,7 +58,6 @@ public class TrainingActivity extends AppCompatActivity {
 
     int steps, distance, calories;
 
-    Button refreshBtn;
 
     DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd", Locale.ENGLISH);
 
@@ -69,9 +68,6 @@ public class TrainingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_training);
 
         waitForDataLatch = new CountDownLatch(1);
-
-        refreshBtn = findViewById(R.id.refresh_trainbutton);
-        refreshBtn.setOnClickListener(view -> requestSteps());
 
         realDays = new LinkedHashMap<>();
         processedDays = new LinkedHashMap<>();
@@ -103,13 +99,13 @@ public class TrainingActivity extends AppCompatActivity {
 
         tabLayout.bringToFront();
 
-        requestSteps();
-
         try {
             transferData();
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        requestSteps();
     }
 
 

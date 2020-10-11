@@ -47,6 +47,8 @@ public class ObjectiveUserInfoFragment extends Fragment {
 
     private View view;
 
+    String[] sexes;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,10 +75,10 @@ public class ObjectiveUserInfoFragment extends Fragment {
         enterWeight = view.findViewById(R.id.editTextWeight);
 
         sexSpinner = view.findViewById(R.id.spinner);
-        String[] sexes = new String[]{"Female", "Male"};
+        sexes = new String[]{"Female", "Male"};
         castSpinnerMap.put("Female", 1);
         castSpinnerMap.put("Male", 2);
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity().getApplicationContext(), android.R.layout.simple_spinner_dropdown_item, sexes);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity().getApplicationContext(), R.layout.spinner_row, sexes);
         sexSpinner.setAdapter(adapter);
 
 
@@ -95,11 +97,21 @@ public class ObjectiveUserInfoFragment extends Fragment {
          */
         saveBtn = view.findViewById(R.id.save_btn);
         saveBtn.setOnClickListener(view -> {
-            MainActivity.currentUser.name = enterName.getText().toString();
-            MainActivity.currentUser.age = Integer.parseInt(enterAge.getText().toString());
-            MainActivity.currentUser.height = Integer.parseInt(enterHeight.getText().toString());
-            MainActivity.currentUser.weight = Integer.parseInt(enterWeight.getText().toString());
-            MainActivity.currentUser.sex = castSpinnerMap.get(sexSpinner.getSelectedItem().toString());
+            if (!enterName.getText().toString().equals("")) {
+                MainActivity.currentUser.name = enterName.getText().toString();
+            }
+            if (!enterAge.getText().toString().equals("")) {
+                MainActivity.currentUser.age = Integer.parseInt(enterAge.getText().toString());
+            }
+            if (!enterHeight.getText().toString().equals("")) {
+                MainActivity.currentUser.height = Integer.parseInt(enterHeight.getText().toString());
+            }
+            if (!enterWeight.getText().toString().equals("")) {
+                MainActivity.currentUser.weight = Integer.parseInt(enterWeight.getText().toString());
+            }
+            if (!sexSpinner.getSelectedItem().toString().equals("")) {
+                MainActivity.currentUser.sex = castSpinnerMap.get(sexSpinner.getSelectedItem().toString());
+            }
 
 
             try{
@@ -122,7 +134,12 @@ public class ObjectiveUserInfoFragment extends Fragment {
         currentAge.setText(String.valueOf(MainActivity.currentUser.age));
         currentHeight.setText(String.valueOf(MainActivity.currentUser.height));
         currentWeight.setText(String.valueOf(MainActivity.currentUser.weight));
-        currentSex.setText(String.valueOf(MainActivity.currentUser.sex));
+
+        if (MainActivity.currentUser.sex == 0){
+            return;
+        }
+
+        currentSex.setText(String.valueOf(sexes[MainActivity.currentUser.sex - 1]));
     }
 
 

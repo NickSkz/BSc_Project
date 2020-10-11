@@ -113,13 +113,13 @@ public class PulseActivity extends AppCompatActivity {
 
 
         series = new LineGraphSeries<>();
+        series.setColor(Color.rgb(0xA9, 0x5B, 0xB1));
         graph = findViewById(R.id.pulse_graph);
         graph.addSeries(series);
 
         graph.setTitle("Live pulse measure");
         graph.setTitleColor(Color.rgb(0, 100, 0));
         graph.getViewport().setScrollable(true);
-
 
         gridLabelRenderer = graph.getGridLabelRenderer();
         gridLabelRenderer.setGridColor(Color.rgb(0, 100, 0));
@@ -141,6 +141,7 @@ public class PulseActivity extends AppCompatActivity {
                 return super.formatLabel(value, isValueX);
             }
         });
+
     }
 
     @Override
