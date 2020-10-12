@@ -22,7 +22,7 @@ import java.util.HashMap;
  * Use the {@link ExaminatedUserInfoFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ExaminatedUserInfoFragment extends Fragment {
+public class ExaminatedUserInfoFragment extends Fragment implements UserFragmentable {
 
     private Spinner choSpinner;
     private Spinner gluSpinner;
@@ -89,8 +89,8 @@ public class ExaminatedUserInfoFragment extends Fragment {
     }
 
 
-
-    private void setCurrentTexts(){
+    @Override
+    public void setCurrentTexts(){
         if (MainActivity.currentUser.cholesterol == 0 || MainActivity.currentUser.glucose == 0) {
             return;
         }

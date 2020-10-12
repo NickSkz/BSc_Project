@@ -118,6 +118,7 @@ public class ConnectionService extends Service {
         }
 
         readyForCommands = true;
+        handler.post(() -> MainActivity.setConnStatus());
 
         return super.onStartCommand(intent, flags, startId);
     }
@@ -138,7 +139,7 @@ public class ConnectionService extends Service {
 
                         // Inform user, by toast launched on the UI Thread thanks to handler
                         handler.post(() ->
-                                Toast.makeText(getApplicationContext(), "Connected to GATT server!", Toast.LENGTH_LONG).show()
+                                Toast.makeText(getApplicationContext(), "Connected to the smartband!", Toast.LENGTH_LONG).show()
                         );
 
                         // If connected - discover devices
@@ -147,10 +148,19 @@ public class ConnectionService extends Service {
 
                         // If disconnected
                     } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
+                        readyForCommands = false;
+                        handler.post(() -> {
+                            MainActivity.setConnStatus();
+                            Toast.makeText(getApplicationContext(), "Disconnected from the smartband!", Toast.LENGTH_LONG).show();
+                        });
+
                         // Set actual connection + perform action connected with it
                         connectionState = STATE_DISCONNECTED;
                         Log.i(TAG, "Disconnected from GATT server.");
                         broadcastUpdate(ACTION_GATT_DISCONNECTED);
+
+                        ConnectionActivity.serviceRunning = false;
+                        stopSelf();
                     }
                 }
 

@@ -42,7 +42,7 @@ import java.util.concurrent.ScheduledExecutorService;
  * Use the {@link StepsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class StepsFragment extends Fragment {
+public class StepsFragment extends Fragment implements TrainingFragmentable{
 
     private static final String TAG = "StepsFragment";
 
@@ -152,7 +152,8 @@ public class StepsFragment extends Fragment {
     }
 
 
-    private void setData(){
+    @Override
+    public void setData(){
         try{
             TrainingActivity.waitForDataLatch.await();
         }catch (Exception e){
@@ -176,6 +177,8 @@ public class StepsFragment extends Fragment {
         graph.refreshDrawableState();
     }
 
+
+    @Override
     public void prepareGraph(){
         TrainingActivity act = (TrainingActivity) getActivity();
 

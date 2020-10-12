@@ -24,7 +24,7 @@ import java.util.HashMap;
  * Use the {@link ObjectiveUserInfoFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ObjectiveUserInfoFragment extends Fragment {
+public class ObjectiveUserInfoFragment extends Fragment implements UserFragmentable {
 
     /*
      * Declare all graphical stuff
@@ -129,7 +129,8 @@ public class ObjectiveUserInfoFragment extends Fragment {
         return view;
     }
 
-    private void setCurrentTexts(){
+    @Override
+    public void setCurrentTexts(){
         currentName.setText(MainActivity.currentUser.name);
         currentAge.setText(String.valueOf(MainActivity.currentUser.age));
         currentHeight.setText(String.valueOf(MainActivity.currentUser.height));

@@ -155,7 +155,7 @@ public class ConnectionActivity extends AppCompatActivity {
             // Stops scanning after a pre-defined scan period, add this to message queue (its still UI Thread!).
             handler.postDelayed(() -> {
                 BLEScanner.stopScan(leScanCallback);
-                Toast.makeText(this, "SCAN FINISHED!", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "SCAN FINISHED!", Toast.LENGTH_SHORT).show();
                 isScanning = false;
             }, SCAN_PERIOD);
 
@@ -345,28 +345,22 @@ public class ConnectionActivity extends AppCompatActivity {
     }
 
 
-    private static void prepareMessage(byte[] bArr) {
-        int buffOne;
-        int buffTwo;
-        if (bArr != null) {
-            buffTwo = bArr.length;
-            buffOne = 0;
-            for (int idx = 0; idx < buffTwo; ++idx) {
-                buffOne = (buffOne >> 8) ^ Consts.crc16_table[(bArr[idx] ^ buffOne) & 255];
-            }
-        } else {
-            buffTwo = 0;
-            buffOne = 0;
+    private static void prepareMessage(byte[] arr) {
+        int buffOne = 0;
+        int messageLength = arr.length;
+
+        for (int idx = 0; idx < messageLength; ++idx) {
+            buffOne = (buffOne >> 8) ^ Consts.crc16_table[(arr[idx] ^ buffOne) & 255];
         }
 
-        Consts.calibrateBand[0] = (byte)-85;
-        Consts.calibrateBand[1] = (byte)0;
-        Consts.calibrateBand[2] = (byte) ((buffTwo >> 8) & 255);
-        Consts.calibrateBand[3] = (byte) (buffTwo & 255);
+        Consts.calibrateBand[0] = (byte) -85;
+        Consts.calibrateBand[1] = (byte) 0;
+        Consts.calibrateBand[2] = (byte) ((messageLength >> 8) & 255);
+        Consts.calibrateBand[3] = (byte) (messageLength & 255);
         Consts.calibrateBand[4] = (byte) ((buffOne >> 8) & 255);
         Consts.calibrateBand[5] = (byte) (buffOne & 255);
-        Consts.calibrateBand[6] = (byte) ((8 >> 8) & 255);
-        Consts.calibrateBand[7] = (byte) (8 & 255);
+        Consts.calibrateBand[6] = (byte) 0;
+        Consts.calibrateBand[7] = (byte) 8;
     }
 
 

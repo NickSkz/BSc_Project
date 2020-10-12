@@ -45,7 +45,7 @@ import java.util.Map;
  * Use the {@link DistanceFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class DistanceFragment extends Fragment {
+public class DistanceFragment extends Fragment implements TrainingFragmentable{
 
     private static final String TAG = "DistanceFragment";
 
@@ -150,8 +150,8 @@ public class DistanceFragment extends Fragment {
     }
 
 
-
-    private void setData(){
+    @Override
+    public void setData(){
         try{
             TrainingActivity.waitForDataLatch.await();
         }catch (Exception e){
@@ -176,6 +176,7 @@ public class DistanceFragment extends Fragment {
     }
 
 
+    @Override
     public void prepareGraph(){
         TrainingActivity act = (TrainingActivity) getActivity();
 

@@ -8,6 +8,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -16,6 +17,7 @@ import android.widget.Toast;
 
 import com.example.biosensordataanalyzer.Bluetooth.BluetoothAPIUtils;
 import com.example.biosensordataanalyzer.Connection.ConnectionActivity;
+import com.example.biosensordataanalyzer.Connection.ConnectionService;
 import com.example.biosensordataanalyzer.StaticData.TrainingActivity;
 import com.example.biosensordataanalyzer.User.CurrentUser;
 import com.example.biosensordataanalyzer.MeasureActivities.PressureActivity;
@@ -47,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
 
     private int EDIT_USER_ACTIVITY = 1;
     private TextView mainUserText, mainAgeText, mainHeightText, mainWeightText;
+    public static TextView connStatText;
 
 
 
@@ -130,6 +133,9 @@ public class MainActivity extends AppCompatActivity {
 
         mainWeightText = findViewById(R.id.main_weight_txt);
         mainWeightText.setText(String.valueOf(currentUser.weight));
+
+        connStatText = findViewById(R.id.conn_stat_tview);
+        setConnStatus();
     }
 
 
@@ -156,6 +162,16 @@ public class MainActivity extends AppCompatActivity {
         mainAgeText.setText(String.valueOf(currentUser.age));
         mainHeightText.setText(String.valueOf(currentUser.height));
         mainWeightText.setText(String.valueOf(currentUser.weight));
+    }
+
+    public static void setConnStatus(){
+        if(ConnectionService.readyForCommands){
+            connStatText.setTextColor(Color.rgb(0x00, 0xFF, 0x00));
+            connStatText.setText("Device Connected");
+        } else {
+            connStatText.setTextColor(Color.rgb(0xFF, 0x00, 0x00));
+            connStatText.setText("Device Disconnected");
+        }
     }
 
 

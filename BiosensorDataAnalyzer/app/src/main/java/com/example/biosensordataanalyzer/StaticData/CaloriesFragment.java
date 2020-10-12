@@ -41,7 +41,7 @@ import java.util.Map;
  * Use the {@link CaloriesFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class CaloriesFragment extends Fragment {
+public class CaloriesFragment extends Fragment implements TrainingFragmentable {
 
     private static final String TAG = "CaloriesFragment";
 
@@ -149,8 +149,8 @@ public class CaloriesFragment extends Fragment {
         return v;
     }
 
-
-    private void setData(){
+    @Override
+    public void setData(){
         try{
             TrainingActivity.waitForDataLatch.await();
         }catch (Exception e){
@@ -175,6 +175,7 @@ public class CaloriesFragment extends Fragment {
     }
 
 
+    @Override
     public void prepareGraph(){
         TrainingActivity act = (TrainingActivity) getActivity();
 

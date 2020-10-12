@@ -43,7 +43,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class PressureActivity extends AppCompatActivity {
+public class PressureActivity extends AppCompatActivity implements Measurable {
 
     private static final String TAG = "PressureActivity";
 
@@ -159,7 +159,8 @@ public class PressureActivity extends AppCompatActivity {
      * Set flag that indicates measure
      * Write proper characteristic to WRITE CHANNEL, to get stuff from the bracelet
      */
-    private void startMeasurement(){
+    @Override
+    public void startMeasurement(){
         if(BluetoothAPIUtils.bluetoothGatt != null && !ConnectionActivity.isMeasuring){
 
             systolicSum = 0;
@@ -192,7 +193,8 @@ public class PressureActivity extends AppCompatActivity {
      * If measure is on, prepare characteristic and write it with 1 sec delay, so every flag in the system has time to properly set
      * Make a toast, set flags to false
      */
-    private void stopMeasurement() {
+    @Override
+    public void stopMeasurement() {
         if(BluetoothAPIUtils.bluetoothGatt != null && ConnectionActivity.isMeasuring){
             BluetoothGattCharacteristic writeChar = BluetoothAPIUtils.bluetoothGatt.getService(Consts.THE_SERVICE).getCharacteristic(Consts.THE_WRITE_CHAR);
             writeChar.setValue(Consts.closeLiveDataStream);
@@ -278,8 +280,8 @@ public class PressureActivity extends AppCompatActivity {
 
     private TextView popUpSys, popUpDia, popUpHDText, popUpPressureNorm;
 
-    private void showPopUp(){
-
+    @Override
+    public void showPopUp(){
         ConnectionActivity.isMeasuring = false;
         pressureMeasurement = false;
 
@@ -308,7 +310,7 @@ public class PressureActivity extends AppCompatActivity {
             popUpHDText.setText(String.format(Locale.ENGLISH, "There is %.2f", MainActivity.currentUser.outputPressureHDArr[0][0] * 100) + "% chance of you having a heart disease");
 
             popUpPressureNorm = popView.findViewById(R.id.pulse_norm_check);
-            popUpPressureNorm.setText("Your blood pressure is: " + checkPressureNorms());
+            popUpPressureNorm.setText("Your blood pressure is: " + checkNorms());
 
 
             popView.setOnTouchListener((v, event) -> {
@@ -321,7 +323,8 @@ public class PressureActivity extends AppCompatActivity {
         }
     }
 
-    private String checkPressureNorms(){
+    @Override
+    public String checkNorms(){
         int systolic = systolicSum / counter;
         int diastolic = diastolicSum / counter;
 

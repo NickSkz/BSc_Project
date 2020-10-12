@@ -42,7 +42,7 @@ import java.util.concurrent.TimeUnit;
 
 
 // Activity that menages pulse measure
-public class PulseActivity extends AppCompatActivity {
+public class PulseActivity extends AppCompatActivity implements Measurable {
 
     private static final String TAG = "PulseActivity";
 
@@ -165,7 +165,8 @@ public class PulseActivity extends AppCompatActivity {
      * Set flag that indicates measure
      * Write proper characteristic to WRITE CHANNEL, to get stuff from the bracelet
      */
-    private void startMeasurement(){
+    @Override
+    public void startMeasurement(){
         if(BluetoothAPIUtils.bluetoothGatt != null && !ConnectionActivity.isMeasuring){
 
             pulseSum = 0;
@@ -195,7 +196,8 @@ public class PulseActivity extends AppCompatActivity {
      * If measure is on, prepare characteristic and write it with 1 sec delay, so every flag in the system has time to properly set
      * Make a toast, set flags to false
      */
-    private void stopMeasurement() {
+    @Override
+    public void stopMeasurement() {
         if(BluetoothAPIUtils.bluetoothGatt != null && ConnectionActivity.isMeasuring){
             BluetoothGattCharacteristic writeChar = BluetoothAPIUtils.bluetoothGatt.getService(Consts.THE_SERVICE).getCharacteristic(Consts.THE_WRITE_CHAR);
             writeChar.setValue(Consts.closeLiveDataStream);
@@ -255,7 +257,8 @@ public class PulseActivity extends AppCompatActivity {
 
     private TextView popUpPul, popUpOxy, popUpPSText, popUpPulseNorm;
 
-    private void showPopUp(){
+    @Override
+    public void showPopUp(){
 
         ConnectionActivity.isMeasuring = false;
         pulseMeasurement = false;
@@ -285,7 +288,7 @@ public class PulseActivity extends AppCompatActivity {
             popUpPSText.setText(String.format(Locale.ENGLISH, "There is %.2f", MainActivity.currentUser.outputPressureHDArr[0][0] * 100) + "% chance of you having a heart disease");
 
             popUpPulseNorm = popView.findViewById(R.id.pulse_norm_check);
-            popUpPulseNorm.setText("Your pulse is: " + checkPulseNorms());
+            popUpPulseNorm.setText("Your pulse is: " + checkNorms());
 
 
             popView.setOnTouchListener((v, event) -> {
@@ -298,9 +301,8 @@ public class PulseActivity extends AppCompatActivity {
         }
     }
 
-
-    private String checkPulseNorms(){
-
+    @Override
+    public String checkNorms(){
         int pulse = pulseSum / counter;
 
         ArrayList<String> communicateTable = new ArrayList<>(Arrays.asList("athlete", "excellent", "good", "above average", "average", "below average", "poor"));

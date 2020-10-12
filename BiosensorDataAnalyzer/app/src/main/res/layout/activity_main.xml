@@ -221,5 +221,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/include2" />
 
+    <TextView
+        android:id="@+id/conn_stat_tview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="4dp"
+        android:text="Device Connected"
+        android:textColor="#60F138"
+        app:layout_constraintEnd_toStartOf="@+id/edit_usr_btn"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView44" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

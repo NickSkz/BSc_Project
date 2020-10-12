@@ -25,7 +25,7 @@ import java.util.HashMap;
  * Use the {@link SubjectiveUserInfoFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class SubjectiveUserInfoFragment extends Fragment {
+public class SubjectiveUserInfoFragment extends Fragment implements UserFragmentable {
 
     private View view;
 
@@ -100,7 +100,8 @@ public class SubjectiveUserInfoFragment extends Fragment {
     }
 
 
-    private void setCurrentTexts(){
+    @Override
+    public void setCurrentTexts(){
         currentCig.setText(String.valueOf(answers[MainActivity.currentUser.cigaretten]));
         currentAlc.setText(String.valueOf(answers[MainActivity.currentUser.alcohol]));
         currentSpo.setText(String.valueOf(answers[MainActivity.currentUser.sport]));
