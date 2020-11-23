@@ -114,14 +114,14 @@ public class DistanceFragment extends Fragment implements TrainingFragmentable{
         graph.setTitle("Last 7 days");
         graph.setTitleColor(Color.rgb(0, 100, 0));
 
-
+        //Create graph
         gridLabelRenderer = graph.getGridLabelRenderer();
         gridLabelRenderer.setGridColor(Color.rgb(0, 100, 0));
         gridLabelRenderer.setHorizontalLabelsColor(Color.rgb(0, 100, 0));
         gridLabelRenderer.setVerticalLabelsColor(Color.rgb(0, 100, 0));
         gridLabelRenderer.setNumHorizontalLabels(7);
         gridLabelRenderer.setPadding(32);
-        gridLabelRenderer.setHorizontalAxisTitle("Days from Today");
+        gridLabelRenderer.setHorizontalAxisTitle("Days");
         gridLabelRenderer.setHorizontalAxisTitleColor(Color.rgb(100, 100, 200));
         gridLabelRenderer.setVerticalAxisTitleColor(Color.rgb(100, 100, 200));
         gridLabelRenderer.setVerticalAxisTitle("Kilometers");
@@ -136,7 +136,7 @@ public class DistanceFragment extends Fragment implements TrainingFragmentable{
             }
         });
 
-
+        //Wait on another thread for data
         Thread thr = new Thread(new Runnable() {
             @Override
             public void run() {

@@ -19,17 +19,17 @@ public class CurrentUser implements Serializable {
      * Declare features
      */
     public String name;
-    public int sex;
+    public int sex; //1 - Women, 2 - Men
     public int age;
     public int weight;
     public int height;
 
-    public int cigaretten;
-    public int alcohol;
-    public int sport;
+    public int cigaretten; //0 - No 1 - Yes
+    public int alcohol; //0 - No 1 - Yes
+    public int sport; //0 - No 1 - Yes
 
-    public int cholesterol;
-    public int glucose;
+    public int cholesterol; //1 - Normal, 2 - Above Normal, 3 - Well Above Normal
+    public int glucose; //1 - Normal, 2 - Above Normal, 3 - Well Above Normal
 
     public float[][] inputPressureHDArr = {{20228, 1, 156, 85.0f, 0, 0, 3, 1, 0, 0, 1}};
     public float[][] outputPressureHDArr = {{0.0f}};

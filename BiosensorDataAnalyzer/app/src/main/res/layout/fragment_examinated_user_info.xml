@@ -7,19 +7,6 @@
     tools:context=".User.ExaminatedUserInfoFragment">
 
     <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="68dp"
-        android:text="Enter User Data"
-        android:textColor="#1B7A16"
-        android:textSize="28sp"
-        app:layout_constraintBottom_toTopOf="@+id/textView35"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.503"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <TextView
         android:id="@+id/textView17"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -50,13 +37,13 @@
         android:id="@+id/textView36"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="80dp"
+        android:layout_marginBottom="120dp"
         android:text="Your glucose level is:"
         android:textColor="#A4C389"
         android:textSize="18sp"
         app:layout_constraintBottom_toTopOf="@+id/textView17"
         app:layout_constraintEnd_toStartOf="@+id/glu_spinner"
-        app:layout_constraintHorizontal_bias="0.225"
+        app:layout_constraintHorizontal_bias="0.2"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Spinner
@@ -74,10 +61,10 @@
         android:id="@+id/glu_spinner"
         android:layout_width="100dp"
         android:layout_height="25dp"
-        android:layout_marginBottom="80dp"
+        android:layout_marginBottom="120dp"
+        android:textColor="#A4C389"
         app:layout_constraintBottom_toTopOf="@+id/textView17"
         app:layout_constraintEnd_toEndOf="parent"
-        android:textColor="#A4C389"
         app:layout_constraintHorizontal_bias="0.953"
         app:layout_constraintStart_toStartOf="parent" />
 

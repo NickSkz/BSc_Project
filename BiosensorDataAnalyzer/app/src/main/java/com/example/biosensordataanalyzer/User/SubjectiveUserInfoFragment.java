@@ -29,6 +29,7 @@ public class SubjectiveUserInfoFragment extends Fragment implements UserFragment
 
     private View view;
 
+    //Spinners responsible for certain information
     private Spinner cigSpinner;
     private Spinner alcSpinner;
     private Spinner spoSpinner;
@@ -38,6 +39,7 @@ public class SubjectiveUserInfoFragment extends Fragment implements UserFragment
     private TextView currentSpo;
 
     private Button saveBtn;
+    //HashMap used for casting data from spinner
     private HashMap<String, Integer> castSpinnerMap;
 
     String[] answers;
@@ -92,7 +94,6 @@ public class SubjectiveUserInfoFragment extends Fragment implements UserFragment
             }
 
             setCurrentTexts();
-            //startActivity(new Intent(EditUserActivity.this, MainActivity.class));
         });
 
 

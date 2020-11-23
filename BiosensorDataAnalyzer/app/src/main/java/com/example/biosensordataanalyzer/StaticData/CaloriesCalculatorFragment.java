@@ -178,8 +178,13 @@ public class CaloriesCalculatorFragment extends Fragment {
 
 
     private void calculateBMR(){
-        bmr = (int)(10 * MainActivity.currentUser.weight + 6.25 * MainActivity.currentUser.height - 5 * MainActivity.currentUser.age - 5);
+        bmr = (int)(10 * MainActivity.currentUser.weight + 6.25 * MainActivity.currentUser.height
+                - 5 * MainActivity.currentUser.age - 5);
+        bmr += MainActivity.currentUser.sex == 1 ? -161 : 5;
+
         caloriesLoss = (int)(castSpinnerMap.get(activitySpinner.getSelectedItem().toString()) * bmr - 500);
+        if(caloriesLoss <= bmr)
+            caloriesLoss = bmr;
         caloriesMaintenance = (int)(bmr * castSpinnerMap.get(activitySpinner.getSelectedItem().toString()));
     }
 

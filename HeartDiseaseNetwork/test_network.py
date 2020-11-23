@@ -5,8 +5,8 @@ from keras.layers import Dense
 from tensorflow import keras
 
 dataset = loadtxt('cardio_traindata.csv', delimiter=';')
-X = dataset[50000:, 1:12]
-Y = dataset[50000:, 12]
+X = dataset[60000:, 1:12]
+Y = dataset[60000:, 12]
 
 model = keras.models.load_model('heart_disease_model.h5')
 

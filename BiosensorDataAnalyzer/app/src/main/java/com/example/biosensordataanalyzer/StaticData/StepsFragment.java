@@ -118,13 +118,14 @@ public class StepsFragment extends Fragment implements TrainingFragmentable{
         graph.setTitleColor(Color.rgb(0, 100, 0));
 
 
+        //Create graph
         gridLabelRenderer = graph.getGridLabelRenderer();
         gridLabelRenderer.setGridColor(Color.rgb(0, 100, 0));
         gridLabelRenderer.setHorizontalLabelsColor(Color.rgb(0, 100, 0));
         gridLabelRenderer.setVerticalLabelsColor(Color.rgb(0, 100, 0));
         gridLabelRenderer.setNumHorizontalLabels(7);
         gridLabelRenderer.setPadding(32);
-        gridLabelRenderer.setHorizontalAxisTitle("Days from Today");
+        gridLabelRenderer.setHorizontalAxisTitle("Days");
         gridLabelRenderer.setHorizontalAxisTitleColor(Color.rgb(100, 100, 200));
         gridLabelRenderer.setVerticalAxisTitleColor(Color.rgb(100, 100, 200));
         gridLabelRenderer.setVerticalAxisTitle("Steps");
@@ -140,6 +141,7 @@ public class StepsFragment extends Fragment implements TrainingFragmentable{
         });
 
 
+        //Wait on another thread for data
         Thread thr = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -161,15 +163,10 @@ public class StepsFragment extends Fragment implements TrainingFragmentable{
         }
 
         TrainingActivity trAc = (TrainingActivity) getActivity();
-
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                steps = trAc.getSteps();
-
-                stepsView.setText(String.valueOf(steps));
-                Log.i(TAG, "Steps: " + steps);
-            }
+        getActivity().runOnUiThread(() -> {
+            steps = trAc.getSteps();
+            stepsView.setText(String.valueOf(steps));
+            Log.i(TAG, "Steps: " + steps);
         });
 
         prepareGraph();

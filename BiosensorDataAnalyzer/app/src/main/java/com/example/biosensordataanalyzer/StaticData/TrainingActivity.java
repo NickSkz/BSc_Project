@@ -54,7 +54,7 @@ public class TrainingActivity extends AppCompatActivity {
     public static CountDownLatch waitForDataLatch;
 
     Map<String, String> processedDays;
-    Map<String, String> realDays;
+    Map<String, String> readFileDays;
 
     int steps, distance, calories;
 
@@ -69,7 +69,7 @@ public class TrainingActivity extends AppCompatActivity {
 
         waitForDataLatch = new CountDownLatch(1);
 
-        realDays = new LinkedHashMap<>();
+        readFileDays = new LinkedHashMap<>();
         processedDays = new LinkedHashMap<>();
 
         TabLayout tabLayout = findViewById(R.id.tab_trainlayout);
@@ -133,13 +133,12 @@ public class TrainingActivity extends AppCompatActivity {
 
     // 147 steps, 102 meters, 4414 cal
     // 158 steps, 110 meters, 4744 cal
-    private void prepareDays(int putSteps, int putDistance, int putCalories){
+    private void prepareDays(){
         processedDays.clear();
-
         Calendar calendar = Calendar.getInstance();
 
         calendar.add(Calendar.DATE, 0);
-        processedDays.put(dateFormat.format(calendar.getTime()), putSteps + ";" + putDistance + ";" + putCalories);
+        processedDays.put(dateFormat.format(calendar.getTime()), 0 + ";" + 0 + ";" + 0);
         calendar.add(Calendar.DATE, -1);
         processedDays.put(dateFormat.format(calendar.getTime()), 0 + ";" + 0 + ";" + 0);
         calendar.add(Calendar.DATE, -1);
@@ -155,7 +154,6 @@ public class TrainingActivity extends AppCompatActivity {
 
     }
 
-    //Ad saving on quit !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     public void save(Context context) throws IOException {
         FileOutputStream fileOutputStream = context.openFileOutput(Consts.lastDaysFileName, Context.MODE_PRIVATE);
@@ -169,7 +167,7 @@ public class TrainingActivity extends AppCompatActivity {
     public void load(Context context) throws IOException, ClassNotFoundException {
         FileInputStream fileInputStream = context.openFileInput(Consts.lastDaysFileName);
         ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
-        realDays = (LinkedHashMap) objectInputStream.readObject();
+        readFileDays = (LinkedHashMap) objectInputStream.readObject();
         objectInputStream.close();
         fileInputStream.close();
     }
@@ -177,9 +175,9 @@ public class TrainingActivity extends AppCompatActivity {
 
     private void transferData() throws IOException {
 
-        prepareDays(0, 0, 0);
+        prepareDays();
 
-        realDays.clear();
+        readFileDays.clear();
 
         try {
             load(getApplicationContext());
@@ -187,20 +185,20 @@ public class TrainingActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        for (Map.Entry<String, String> entry : realDays.entrySet()){
+        for (Map.Entry<String, String> entry : readFileDays.entrySet()){
             Log.i(TAG, entry.getKey() + " : " + entry.getValue());
         }
 
 
         for (Map.Entry<String, String> entry : processedDays.entrySet()){
-            if(realDays.containsKey(entry.getKey())){
+            if(readFileDays.containsKey(entry.getKey())){
                 String[] oldVals = entry.getValue().split(";");
-                String[] readVals = realDays.get(entry.getKey()).split(";");
-                int[] newVals = {
+                String[] readVals = readFileDays.get(entry.getKey()).split(";");
+                int[] newVals = {     //Add previous values
                         Integer.parseInt(oldVals[0]) + Integer.parseInt(readVals[0]),
                         Integer.parseInt(oldVals[1]) + Integer.parseInt(readVals[1]),
                         Integer.parseInt(oldVals[2]) + Integer.parseInt(readVals[2])
-                };
+                };    //Add to fresh map
                 processedDays.put(entry.getKey(), newVals[0] + ";" + newVals[1] + ";" + newVals[2]);
             }
         }

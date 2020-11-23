@@ -12,7 +12,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="80dp"
-        android:text="Today, you've already done"
+        android:text="Today, you've already walked"
         android:textColor="#A4C389"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"

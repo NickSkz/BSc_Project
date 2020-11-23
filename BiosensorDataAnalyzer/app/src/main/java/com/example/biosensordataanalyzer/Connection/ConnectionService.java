@@ -114,7 +114,7 @@ public class ConnectionService extends Service {
         if(descriptor != null) {
             descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
             BluetoothAPIUtils.bluetoothGatt.writeDescriptor(descriptor);
-            Log.i(TAG, "Notification set!");
+            Log.i(TAG, "Ready for Notification!");
         }
 
         readyForCommands = true;
@@ -143,7 +143,7 @@ public class ConnectionService extends Service {
                         );
 
                         // If connected - discover devices
-                        Log.i(TAG, "Attempting to start service discovery:" +
+                        Log.i(TAG, "Start service discovery:" +
                                 BluetoothAPIUtils.bluetoothGatt.discoverServices());
 
                         // If disconnected
@@ -255,7 +255,7 @@ public class ConnectionService extends Service {
                             stepArr[2] = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 7).byteValue();
                             stepArr[3] = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 8).byteValue();
                             ByteBuffer byte0Buffer = ByteBuffer.wrap(stepArr);
-                            int stepShortVal = byte0Buffer.getInt();
+                            int stepSVal = byte0Buffer.getInt();
 
                             byte[] distanceArr = new byte[4];
                             distanceArr[0] = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 9).byteValue();
@@ -263,7 +263,7 @@ public class ConnectionService extends Service {
                             distanceArr[2] = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 11).byteValue();
                             distanceArr[3] = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 12).byteValue();
                             ByteBuffer byteBuffer = ByteBuffer.wrap(distanceArr);
-                            int distanceShortVal = byteBuffer.getInt();
+                            int distanceSVal = byteBuffer.getInt();
 
                             byte[] caloriesArr = new byte[4];
                             caloriesArr[0] = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 13).byteValue();
@@ -271,11 +271,11 @@ public class ConnectionService extends Service {
                             caloriesArr[2] = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 15).byteValue();
                             caloriesArr[3] = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 16).byteValue();
                             ByteBuffer byte2Buffer = ByteBuffer.wrap(caloriesArr);
-                            int caloriesShortVal = byte2Buffer.getInt();
+                            int caloriesSVal = byte2Buffer.getInt();
 
-                            intent.putExtra(Consts.STEPS, stepShortVal);
-                            intent.putExtra(Consts.DISTANCE, distanceShortVal);
-                            intent.putExtra(Consts.CALORIES, caloriesShortVal);
+                            intent.putExtra(Consts.STEPS, stepSVal);
+                            intent.putExtra(Consts.DISTANCE, distanceSVal);
+                            intent.putExtra(Consts.CALORIES, caloriesSVal);
                             sendBroadcast(intent);
                         }
                     } else if (ConnectionActivity.waitingForBattery){

@@ -8,13 +8,6 @@ import androidx.fragment.app.FragmentPagerAdapter;
 
 public class UserDataPageAdapter extends FragmentPagerAdapter {
 
-    private int tabsNumber;
-
-    public UserDataPageAdapter(FragmentManager fm, int tabsNr){
-        super(fm);
-        tabsNumber = tabsNr;
-    }
-
     @NonNull
     @Override
     public Fragment getItem(int position) {
@@ -28,6 +21,13 @@ public class UserDataPageAdapter extends FragmentPagerAdapter {
             default:
                 return null;
         }
+    }
+
+    private int tabsNumber;
+
+    public UserDataPageAdapter(FragmentManager fm, int tabsNr){
+        super(fm);
+        tabsNumber = tabsNr;
     }
 
     @Override

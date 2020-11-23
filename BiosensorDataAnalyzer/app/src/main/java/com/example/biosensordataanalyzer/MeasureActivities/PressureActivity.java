@@ -264,12 +264,11 @@ public class PressureActivity extends AppCompatActivity implements Measurable {
     private void initializeTfLite(){
         try{
             AssetFileDescriptor assetFileDescriptor = getAssets().openFd("heart_disease_model.tflite");
-            long startOff = assetFileDescriptor.getStartOffset();
-            long length = assetFileDescriptor.getDeclaredLength();
-
             FileInputStream fileInputStream = new FileInputStream(assetFileDescriptor.getFileDescriptor());
             FileChannel fileChannel = fileInputStream.getChannel();
-            tfLiteBuffer = fileChannel.map(FileChannel.MapMode.READ_ONLY, startOff, length);
+
+            tfLiteBuffer = fileChannel.map(FileChannel.MapMode.READ_ONLY, assetFileDescriptor.getStartOffset(),
+                    assetFileDescriptor.getDeclaredLength());
 
         } catch (IOException e) {
             e.printStackTrace();

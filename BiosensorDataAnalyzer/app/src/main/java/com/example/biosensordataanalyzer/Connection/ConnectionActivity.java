@@ -176,7 +176,7 @@ public class ConnectionActivity extends AppCompatActivity {
             // Add device to the message queue - notify bout it ListView
             handler.post(() ->
             {
-                // Accept only singnals that are stronger than -90 RSSI (we want a bracelet to be near our device)
+                // Accept only singnals that are stronger than -90 RSSI (we want the bracelet to be near our device)
                 if(result.getRssi() > -90) {
                     // Add to the list view stuff that hasn't appeared earlier (add to LV if its possible to add smth to the HashSet)
                     if (BLEDevices.add(result.getDevice())) {
@@ -218,6 +218,13 @@ public class ConnectionActivity extends AppCompatActivity {
             scanLeDevice(true);
         }
     }
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public static boolean waitingForBattery;
     private int batteryLevel;
@@ -327,7 +334,7 @@ public class ConnectionActivity extends AppCompatActivity {
 
 
             /*
-             * Really, really terrible version (send date from the past to zero out data, then send current datetime :) )
+             * Send date from the past to zero out data, then send current datetime :)
              */
             waitingForZeroing = true;
             BluetoothGattCharacteristic writeChar = BluetoothAPIUtils.bluetoothGatt.getService(Consts.THE_SERVICE).getCharacteristic(Consts.THE_WRITE_CHAR);

@@ -62,7 +62,7 @@ public class PulseActivity extends AppCompatActivity implements Measurable {
     // Flag that tells whether pulse measure is performed
     private boolean pulseMeasurement;
 
-    private HashMap<String, ArrayList<String>> normsTableMale, normsTableFemale;
+    private HashMap<String, ArrayList<String>> normsTable;// normsTableFemale;
 
     private GraphView graph;
     private GridLabelRenderer gridLabelRenderer;
@@ -81,22 +81,22 @@ public class PulseActivity extends AppCompatActivity implements Measurable {
         readyMeasureText = findViewById(R.id.ready_pulse_view);
 
 
-        normsTableMale = new HashMap<>();
-        normsTableMale.put("18;25", new ArrayList<>(Arrays.asList("49;55", "56;61", "62;65", "66;69", "70;73", "74;81", "82;999")));
-        normsTableMale.put("26;35", new ArrayList<>(Arrays.asList("49;54", "56;61", "62;65", "66;70", "71;74", "75;81", "82;999")));
-        normsTableMale.put("36;45", new ArrayList<>(Arrays.asList("50;56", "57;62", "63;66", "67;70", "71;75", "76;82", "83;999")));
-        normsTableMale.put("46;55", new ArrayList<>(Arrays.asList("50;57", "58;63", "64;67", "68;71", "72;76", "77;83", "84;999")));
-        normsTableMale.put("56;65", new ArrayList<>(Arrays.asList("51;56", "57;61", "62;67", "68;71", "72;75", "76;81", "82;999")));
-        normsTableMale.put("66;999", new ArrayList<>(Arrays.asList("50;55", "56;61", "62;65", "66;69", "70;73", "74;19", "80;999")));
+        normsTable = new HashMap<>();
+        normsTable.put("18;25", new ArrayList<>(Arrays.asList("49;55", "56;61", "62;65", "66;69", "70;73", "74;81", "82;999")));
+        normsTable.put("26;35", new ArrayList<>(Arrays.asList("49;54", "56;61", "62;65", "66;70", "71;74", "75;81", "82;999")));
+        normsTable.put("36;45", new ArrayList<>(Arrays.asList("50;56", "57;62", "63;66", "67;70", "71;75", "76;82", "83;999")));
+        normsTable.put("46;55", new ArrayList<>(Arrays.asList("50;57", "58;63", "64;67", "68;71", "72;76", "77;83", "84;999")));
+        normsTable.put("56;65", new ArrayList<>(Arrays.asList("51;56", "57;61", "62;67", "68;71", "72;75", "76;81", "82;999")));
+        normsTable.put("66;999", new ArrayList<>(Arrays.asList("50;55", "56;61", "62;65", "66;69", "70;73", "74;19", "80;999")));
 
 
-        normsTableFemale = new HashMap<>();
-        normsTableFemale.put("18;25", new ArrayList<>(Arrays.asList("54;60", "61;65", "66;69", "70;73", "74;78", "79;84", "85;999")));
-        normsTableFemale.put("26;35", new ArrayList<>(Arrays.asList("54;59", "60;64", "65;68", "69;72", "73;76", "77;82", "83;999")));
-        normsTableFemale.put("36;45", new ArrayList<>(Arrays.asList("54;59", "60;64", "65;69", "70;73", "74;78", "79;84", "85;999")));
-        normsTableFemale.put("46;55", new ArrayList<>(Arrays.asList("54;60", "61;65", "66;69", "70;73", "74;77", "77;83", "84;999")));
-        normsTableFemale.put("56;65", new ArrayList<>(Arrays.asList("54;59", "60;64", "65;68", "69;73", "74;77", "78;83", "84;999")));
-        normsTableFemale.put("66;999", new ArrayList<>(Arrays.asList("50;59", "60;64", "65;68", "69;72", "73;76", "77;84", "84;999")));
+        //normsTableFemale = new HashMap<>();
+        //normsTableFemale.put("18;25", new ArrayList<>(Arrays.asList("54;60", "61;65", "66;69", "70;73", "74;78", "79;84", "85;999")));
+        //normsTableFemale.put("26;35", new ArrayList<>(Arrays.asList("54;59", "60;64", "65;68", "69;72", "73;76", "77;82", "83;999")));
+        //normsTableFemale.put("36;45", new ArrayList<>(Arrays.asList("54;59", "60;64", "65;69", "70;73", "74;78", "79;84", "85;999")));
+        //normsTableFemale.put("46;55", new ArrayList<>(Arrays.asList("54;60", "61;65", "66;69", "70;73", "74;77", "77;83", "84;999")));
+        //normsTableFemale.put("56;65", new ArrayList<>(Arrays.asList("54;59", "60;64", "65;68", "69;73", "74;77", "78;83", "84;999")));
+        //normsTableFemale.put("66;999", new ArrayList<>(Arrays.asList("50;59", "60;64", "65;68", "69;72", "73;76", "77;84", "84;999")));
 
         /*
          * Assign methods to start/stop button
@@ -307,14 +307,14 @@ public class PulseActivity extends AppCompatActivity implements Measurable {
 
         ArrayList<String> communicateTable = new ArrayList<>(Arrays.asList("athlete", "excellent", "good", "above average", "average", "below average", "poor"));
 
-        HashMap<String, ArrayList<String>> normsTable;
+        HashMap<String, ArrayList<String>> normssTable;
 
         switch (MainActivity.currentUser.sex){
             case 1:
-                normsTable = normsTableFemale;
+                normssTable = normsTable;
                 break;
             case 2:
-                normsTable = normsTableMale;
+                normssTable = normsTable;
                 break;
             default:
                 return "enter user data first";
@@ -335,6 +335,6 @@ public class PulseActivity extends AppCompatActivity implements Measurable {
             }
         }
 
-        return "you're too young";
+        return "";
     }
 }
